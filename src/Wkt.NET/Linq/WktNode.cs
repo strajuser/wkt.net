@@ -24,8 +24,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections;
 
 namespace Wkt.NET.Linq
 {
@@ -44,7 +43,7 @@ namespace Wkt.NET.Linq
         /// new WktNode("SPHEROID", "WGS_1984", 6378137.0, 298.257223563)
         /// </code>
         /// </example>
-        public WktNode(string key, params object[] values) : base(new WktArray(values))
+        public WktNode(string key, params object[] values) : base(values)
         {
             Key = key;
         }
@@ -54,8 +53,10 @@ namespace Wkt.NET.Linq
         /// </summary>
         /// <param name="key">Key of WKT Node</param>
         /// <param name="values">IEnumerable of values of WKT Node</param>
-        public WktNode(string key, IEnumerable<object> values) : this(key, values.ToArray())
+        public WktNode(string key, IEnumerable values)
+            : base(values)
         {
+            Key = key;
         }
 
         /// <summary>

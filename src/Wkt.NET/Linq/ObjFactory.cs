@@ -30,18 +30,28 @@ using System.Linq;
 namespace Wkt.NET.Linq
 {
     /// <summary>
-    /// Helper class for transforming WktObjects
+    /// Helper class for transforming inner arrays to WktObjects
     /// </summary>
-    internal static class Utilities
+    internal static class ObjFactory
     {
         /// <summary>
-        /// Transform source values to WktValue objects if it's need
+        /// Creates a list of WktObjects from array. Inner arrays and WktArrays will be union
         /// </summary>
-        /// <param name="source"></param>
+        /// <param name="values"></param>
         /// <returns></returns>
-        public static IEnumerable<WktValue> CreateWktList(IEnumerable source)
+        public static List<WktValue> CreateObjects(params object[] values)
         {
-            return source.Cast<object>().Select(CreateWktValue);
+            return values.SelectMany(GetInnerObjects).ToList();
+        }
+
+        /// <summary>
+        /// Creates a list of WktObjects from Enumerable. Inner arrays and WktArrays will be union
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public static List<WktValue> CreateObjects(IEnumerable values)
+        {
+            return GetInnerObjects(values).ToList();
         }
 
         /// <summary>
@@ -49,9 +59,26 @@ namespace Wkt.NET.Linq
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static WktValue CreateWktValue(object value)
+        private static WktValue CreateWktValue(object value)
         {
             return value is WktValue ? (WktValue)value : new WktValue(value);
+        }
+
+        /// <summary>
+        /// Gets inner objects converted to WktValue. 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        private static IEnumerable<WktValue> GetInnerObjects(object obj)
+        {
+            // Exclude simple enumerable data types from union - string and WktNode
+            if (!(obj is IEnumerable) ||
+                obj is string ||
+                obj is WktNode)
+                return new[] {CreateWktValue(obj)};
+
+            var items = obj as IEnumerable;
+            return items.Cast<object>().SelectMany(GetInnerObjects).Select(CreateWktValue);
         }
     }
 }

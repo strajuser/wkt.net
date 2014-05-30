@@ -80,8 +80,8 @@ namespace Wkt.NET.Tests.Linq
             array = new WktArray(1, new WktNode("Key", 1, 2));
             Assert.IsTrue(array.Count == 2);
 
-            array = new WktArray(1, new WktNode("Key", 1, 2), new [] { 1, 2});
-            Assert.IsTrue(array.Count == 3);
+            array = new WktArray(1, new WktNode("Key", 1, 2), new [] { 1, 2 });
+            Assert.IsTrue(array.Count == 4);
         }
 
         [TestMethod]

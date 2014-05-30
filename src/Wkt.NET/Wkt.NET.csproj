@@ -42,7 +42,7 @@
     <Compile Include="Enum\ReaderState.cs" />
     <Compile Include="Linq\WktArray.cs" />
     <Compile Include="Linq\WktNode.cs" />
-    <Compile Include="Linq\Utilities.cs" />
+    <Compile Include="Linq\ObjFactory.cs" />
     <Compile Include="Linq\WktValue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IO\WktReader.cs" />

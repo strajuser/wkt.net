@@ -35,6 +35,10 @@ namespace Wkt.NET.Linq
     {
         internal static IFormatProvider DefaultFormatter = CultureInfo.InvariantCulture;
 
+        /// <summary>
+        /// Creates WktValue wrapper for <paramref name="value"/>
+        /// </summary>
+        /// <param name="value"></param>
         public WktValue(object value)
         {
             Value = value;

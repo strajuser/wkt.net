@@ -45,7 +45,7 @@ namespace Wkt.NET.Linq
         /// </summary>
         /// <param name="values">Array of values of WKT Array</param>
         public WktArray(params object[] values)
-            : base(Utilities.CreateWktList(values).ToList())
+            : base(ObjFactory.CreateObjects(values))
         {
             _values = (List<WktValue>)Value;
         }
@@ -54,8 +54,10 @@ namespace Wkt.NET.Linq
         /// Creates array of values for WKT objects structure
         /// </summary>
         /// <param name="values">Enumerable of values of WKT Array</param>
-        public WktArray(IEnumerable<object> values) : this(values.ToArray())
+        public WktArray(IEnumerable values) : 
+            base(ObjFactory.CreateObjects(values))
         {
+            _values = (List<WktValue>)Value;
         }
 
         #region | IList<WktValue> Members |
