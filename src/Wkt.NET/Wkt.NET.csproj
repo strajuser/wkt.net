@@ -46,9 +46,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IO\WktReader.cs" />
     <Compile Include="IO\WktTextReader.cs" />
+    <Compile Include="Serialization\WktSerializer.cs" />
     <Compile Include="Serialization\WktSerializerInternal.cs" />
     <Compile Include="Utilities\StringBuffer.cs" />
-    <Compile Include="WktSerializer.cs" />
+    <Compile Include="WktConvert.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Exceptions\" />

@@ -44,6 +44,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IO\WktTextReaderTests.cs" />
+    <Compile Include="Linq\WktArrayTests.cs" />
+    <Compile Include="Linq\WktNodeTests.cs" />
+    <Compile Include="Linq\WktValueTests.cs" />
     <Compile Include="Serialization\WktSerializerInternalTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -53,9 +56,7 @@
       <Name>Wkt.NET</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Linq\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
