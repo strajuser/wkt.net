@@ -65,18 +65,17 @@ namespace Wkt.NET.Serialization
         {
             switch (_reader.State)
             {
-                case ReaderState.KeyEnded:
+                case ReaderState.Key:
                 {
                     var key = _reader.Value.ToString();
                     _stack.Push(new KeyToken(key));
                 }
                     break;
-                case ReaderState.ValueEnded: 
+                case ReaderState.Value: 
                     if (_reader.Value != null)
                         _stack.Push(new WktValue(_reader.Value));
                     break;
-                case ReaderState.Finished:
-                case ReaderState.NodeEnded:
+                case ReaderState.Node:
                 {
                     if (_reader.Value != null)
                         _stack.Push(new WktValue(_reader.Value));

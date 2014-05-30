@@ -25,6 +25,7 @@
 
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Wkt.NET.Linq;
 
 namespace Wkt.NET.Tests.Linq
 {
@@ -34,13 +35,36 @@ namespace Wkt.NET.Tests.Linq
         [TestMethod]
         public void Linq_Simple_Ctor()
         {
-            throw new NotImplementedException();
+            var value = new WktValue("str");
+            Assert.IsTrue(value.Value is string);
+            Assert.AreEqual(value.Value, "str");
+
+            value = new WktValue(1);
+            Assert.IsTrue(value.Value is int);
+            Assert.AreEqual(value.Value, 1);
+
+            value = new WktValue(2.0);
+            Assert.IsTrue(value.Value is double);
+            Assert.AreEqual(value.Value, 2.0);
         }
 
         [TestMethod]
-        public void ToString_Simple()
+        public void ToString_DefaultFormats()
         {
-            throw new NotImplementedException();
+            var val = new WktValue(1);
+            Assert.AreEqual(val.ToString(), "1");
+
+            val = new WktValue(2.0);
+            Assert.AreEqual(val.ToString(), "2.0");
+
+            val = new WktValue((decimal)3.0);
+            Assert.AreEqual(val.ToString(), "3.0");
+
+            val = new WktValue((float)4.0);
+            Assert.AreEqual(val.ToString(), "4.0");
+
+            val = new WktValue("str");
+            Assert.AreEqual(val.ToString(), "\"str\"");
         }
 
         [TestMethod]

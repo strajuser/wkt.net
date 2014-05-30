@@ -24,12 +24,156 @@
 #endregion
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Wkt.NET.Enum;
+using Wkt.NET.IO;
 
 namespace Wkt.NET.Tests.IO
 {
     [TestClass]
     public class WktTextReaderTests
     {
-         
+        [TestMethod]
+        public void Read_SimpleNumberValue()
+        {
+            const string data = "1";
+
+            using (var reader = new WktTextReader(data))
+            {
+                var rez = reader.Read();
+                Assert.IsTrue(rez);
+                Assert.IsTrue(reader.State == ReaderState.Value);
+                Assert.IsTrue(reader.Value is int);
+
+                rez = reader.Read();
+                Assert.IsFalse(rez);
+                Assert.IsTrue(reader.State == ReaderState.Finished);
+                Assert.IsNull(reader.Value);
+            }
+        }
+
+        [TestMethod]
+        public void Read_SimpleStringValue()
+        {
+            const string data = "\"str\"";
+
+            using (var reader = new WktTextReader(data))
+            {
+                var rez = reader.Read();
+                Assert.IsTrue(rez);
+                Assert.IsTrue(reader.State == ReaderState.Value);
+                Assert.IsTrue(reader.Value is string);
+
+                rez = reader.Read();
+                Assert.IsFalse(rez);
+                Assert.IsTrue(reader.State == ReaderState.Finished);
+                Assert.IsNull(reader.Value);
+            }
+        }
+
+        [TestMethod]
+        public void Read_SimpleStringNumberValue()
+        {
+            const string data = "\"1\"";
+
+            using (var reader = new WktTextReader(data))
+            {
+                var rez = reader.Read();
+                Assert.IsTrue(rez);
+                Assert.IsTrue(reader.State == ReaderState.Value);
+                Assert.IsTrue(reader.Value is string);
+
+                rez = reader.Read();
+                Assert.IsFalse(rez);
+                Assert.IsTrue(reader.State == ReaderState.Finished);
+                Assert.IsNull(reader.Value);
+            }
+        }
+
+        [TestMethod]
+        public void Read_SimpleArray()
+        {
+            const string data = "1, \"str\", 2.0";
+            
+            using (var reader = new WktTextReader(data))
+            {
+                var rez = reader.Read();
+                Assert.IsTrue(rez);
+                Assert.IsTrue(reader.State == ReaderState.Value);
+                Assert.IsTrue(reader.Value is int);
+
+                rez = reader.Read();
+                Assert.IsTrue(rez);
+                Assert.IsTrue(reader.State == ReaderState.Value);
+                Assert.IsTrue(reader.Value is string);
+
+                rez = reader.Read();
+                Assert.IsTrue(rez);
+                Assert.IsTrue(reader.State == ReaderState.Value);
+                Assert.IsTrue(reader.Value is double);
+
+                rez = reader.Read();
+                Assert.IsFalse(rez);
+                Assert.IsTrue(reader.State == ReaderState.Finished);
+                Assert.IsNull(reader.Value);
+            }
+        }
+
+        [TestMethod]
+        public void Read_SimpleNumberNode()
+        {
+            const string data = "KEY[1]";
+
+            using (var reader = new WktTextReader(data))
+            {
+                var rez = reader.Read();
+                Assert.IsTrue(rez);
+                Assert.IsTrue(reader.State == ReaderState.Key);
+                Assert.AreEqual(reader.Value, "KEY");
+
+                rez = reader.Read();
+                Assert.IsTrue(rez);
+                Assert.IsTrue(reader.State == ReaderState.Value);
+                Assert.IsTrue(reader.Value is int);
+
+                rez = reader.Read();
+                Assert.IsTrue(rez);
+                Assert.IsTrue(reader.State == ReaderState.Node);
+                Assert.IsNull(reader.Value);
+
+                rez = reader.Read();
+                Assert.IsFalse(rez);
+                Assert.IsTrue(reader.State == ReaderState.Finished);
+                Assert.IsNull(reader.Value);
+            }
+        }
+
+        [TestMethod]
+        public void Read_SimpleStringNode()
+        {
+            const string data = "KEY[\"1\"]";
+
+            using (var reader = new WktTextReader(data))
+            {
+                var rez = reader.Read();
+                Assert.IsTrue(rez);
+                Assert.IsTrue(reader.State == ReaderState.Key);
+                Assert.AreEqual(reader.Value, "KEY");
+
+                rez = reader.Read();
+                Assert.IsTrue(rez);
+                Assert.IsTrue(reader.State == ReaderState.Value);
+                Assert.IsTrue(reader.Value is string);
+
+                rez = reader.Read();
+                Assert.IsTrue(rez);
+                Assert.IsTrue(reader.State == ReaderState.Node);
+                Assert.IsNull(reader.Value);
+
+                rez = reader.Read();
+                Assert.IsFalse(rez);
+                Assert.IsTrue(reader.State == ReaderState.Finished);
+                Assert.IsNull(reader.Value);
+            }
+        }
     }
 }

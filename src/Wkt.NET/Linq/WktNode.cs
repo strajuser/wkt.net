@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Wkt.NET.Linq
@@ -32,22 +33,22 @@ namespace Wkt.NET.Linq
     /// <summary>
     /// WKT Node with signature key[value {, value}]
     /// </summary>
-    public class WktNode : WktValue
+    public class WktNode : WktArray
     {
         /// <summary>
-        /// Creates simple WKT Node with simple value (ex. "PROJECTION["Mercator_Auxiliary_Sphere"]") 
+        /// Creates simple WKT Node with simple value (ex. "UNIT[1.0]") 
         /// </summary>
         /// <param name="key">Key of WKT Node</param>
         /// <param name="value">Value of WKT Node</param>
         /// <example>
         /// <code lang="cs">
-        /// var node = new WktNode("PROJECTION", "Mercator_Auxiliary_Sphere");  
+        /// var node = new WktNode("UNIT", 1.0)
         /// </code>
         /// </example>
-        public WktNode(string key, object value) : base(value)
-        {
-            Key = key;
-        }
+        //public WktNode(string key, object value) : base(Utilities.CreateWktValue(value))
+        //{
+        //    Key = key;
+        //}
 
         /// <summary>
         /// Creates simple WKT Node with array of values (ex. "SPHEROID["WGS_1984", 6378137.0, 298.257223563]") 
@@ -59,8 +60,9 @@ namespace Wkt.NET.Linq
         /// new WktNode("SPHEROID", "WGS_1984", 6378137.0, 298.257223563)
         /// </code>
         /// </example>
-        public WktNode(string key, params object[] values) : this(key, new WktArray(values))
+        public WktNode(string key, params object[] values) : base(new WktArray(values))
         {
+            Key = key;
         }
 
         /// <summary>
@@ -68,10 +70,18 @@ namespace Wkt.NET.Linq
         /// </summary>
         /// <param name="key">Key of WKT Node</param>
         /// <param name="values">IEnumerable of values of WKT Node</param>
-        public WktNode(string key, IEnumerable values) : this(key, values.Cast<object>().ToArray())
+        public WktNode(string key, IEnumerable<object> values) : this(key, values.ToArray())
         {
-            
         }
+
+        /// <summary>
+        /// Creates simple WKT Node with simple string value (ex. "PROJECTION["Mercator_Auxiliary_Sphere"]") 
+        /// </summary>
+        /// <param name="key">Key of WKT Node</param>
+        /// <param name="value">IEnumerable of values of WKT Node</param>
+        //public WktNode(string key, string value) : this(key, (object)value)
+        //{
+        //}
 
         /// <summary>
         /// Gets WKT Node Key

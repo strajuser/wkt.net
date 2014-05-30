@@ -24,6 +24,8 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Wkt.NET.Linq;
 
@@ -32,16 +34,8 @@ namespace Wkt.NET.Tests.Linq
     [TestClass]
     public class WktNodeTests
     {
-        [TestMethod]
-        public void Linq_Simple_Ctor()
-        {
-            throw new NotImplementedException();
-        }
-
-        [TestMethod]
-        public void Linq_Params_Ctor()
-        {
-            var obj = new WktNode(
+        /*
+         * var obj = new WktNode(
                 "PROJCS",
                 "WGS_1984_Web_Mercator_Auxiliary_Sphere",
                 new WktNode("GEOGCS",
@@ -59,20 +53,61 @@ namespace Wkt.NET.Tests.Linq
                 new WktNode("PARAMETER", "Auxiliary_Sphere_Type", 0.0),
                 new WktNode("UNIT", "Meter", 1.0),
                 new WktNode("AUTHORITY", "ESRI", "102100"));
-            
-            throw new NotImplementedException();
+         */
+
+        [TestMethod]
+        public void Linq_Simple_Ctor()
+        {
+            var node = new WktNode("PROJECTION", "Mercator_Auxiliary_Sphere");
+
+            Assert.AreEqual(node.Key, "PROJECTION");
+            Assert.IsTrue(node.Count == 1);
+            Assert.AreEqual(node[0].Value, "Mercator_Auxiliary_Sphere");
+        }
+
+        [TestMethod]
+        public void Linq_Params_Ctor()
+        {
+            var node = new WktNode("PROJCS",
+                "WGS_1984_Web_Mercator_Auxiliary_Sphere",
+                new WktNode("PROJECTION", "Mercator_Auxiliary_Sphere"),
+                new WktNode("PARAMETER", "False_Easting", 0.0),
+                new WktNode("PARAMETER", "False_Northing", 0.0),
+                new WktNode("PARAMETER", "Central_Meridian", 0.0),
+                new WktNode("PARAMETER", "Standard_Parallel_1", 0.0),
+                new WktNode("PARAMETER", "Auxiliary_Sphere_Type", 0.0));
+
+            Assert.AreEqual(node[0].Value, "WGS_1984_Web_Mercator_Auxiliary_Sphere");
+            Assert.IsTrue(node.Count == 7);
+            Assert.IsTrue(node.OfType<WktNode>().Count() == 6);
+            Assert.IsTrue(node.OfType<WktNode>().Count(x => x.Key == "PARAMETER") == 5);
         }
 
         [TestMethod]
         public void Linq_Enumerable_Ctor()
         {
-            throw new NotImplementedException();
+            var list = new List<object> { "str", 1, 2.0 };
+
+            var node = new WktNode("Key", list);
+
+            Assert.IsTrue(node.Count == 3);
+            Assert.AreEqual(node[1].Value, 1);
         }
 
         [TestMethod]
         public void ToString_Simple()
         {
-            throw new NotImplementedException();
+            var node = new WktNode("KEY", "Value");
+            Assert.AreEqual(node.ToString(), "KEY[\"Value\"]");
+
+            node = new WktNode("KEY", "Value", 1, 2.0);
+            Assert.AreEqual(node.ToString(), "KEY[\"Value\",1,2.0]");
+
+            node = new WktNode("PROJCS", 
+                "WGS_1984_Web_Mercator_Auxiliary_Sphere",
+                new WktNode("PROJECTION", "Mercator_Auxiliary_Sphere"),
+                new WktNode("PARAMETER", "False_Easting", 0.0));
+            Assert.AreEqual(node.ToString(), "PROJCS[\"WGS_1984_Web_Mercator_Auxiliary_Sphere\",PROJECTION[\"Mercator_Auxiliary_Sphere\"],PARAMETER[\"False_Easting\",0.0]]");
         }
 
         [TestMethod]

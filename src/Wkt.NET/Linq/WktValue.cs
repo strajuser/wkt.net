@@ -33,6 +33,8 @@ namespace Wkt.NET.Linq
     /// </summary>
     public class WktValue
     {
+        internal static IFormatProvider DefaultFormatter = CultureInfo.InvariantCulture;
+
         public WktValue(object value)
         {
             Value = value;
@@ -51,7 +53,7 @@ namespace Wkt.NET.Linq
         /// </remarks>
         public sealed override string ToString()
         {
-            return ToString(CultureInfo.InvariantCulture);
+            return ToString(DefaultFormatter);
         }
 
         /// <summary>
@@ -66,6 +68,11 @@ namespace Wkt.NET.Linq
 
             if (Value is string)
                 return String.Format(provider, "\"{0}\"",  Value);
+
+            if (Value is double ||
+                Value is float ||
+                Value is decimal)
+                return String.Format(provider, "{0:0.0}", Value);
 
             return String.Format(provider, "{0}", Value);
         }

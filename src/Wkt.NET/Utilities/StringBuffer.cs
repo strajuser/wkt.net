@@ -95,6 +95,15 @@ namespace Wkt.NET.Utilities
             return rez;
         }
 
+        /// <summary>
+        /// Checks if current buffer is empty
+        /// </summary>
+        /// <returns></returns>
+        public bool IsEmpty()
+        {
+            return _position == 0;
+        }
+
         private void EnsureSize(int appendLength)
         {
             var newBuffer = new char[(_position + appendLength) * 2];

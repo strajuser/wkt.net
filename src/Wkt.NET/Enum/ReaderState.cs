@@ -35,21 +35,12 @@ namespace Wkt.NET.Enum
         /// <summary> The end has been reached </summary>
         Finished,
 
-        /// <summary> Read Method has been started readding key </summary>
-        KeyStarted,
-        //Key,
         /// <summary> Read Method has been ended readding key </summary>
-        KeyEnded,
-        /// <summary> Read Method has been started readding value </summary>
-        ValueStarted,
-        //Value,
+        Key,
         /// <summary> Read Method has been ended readding value </summary>
-        ValueEnded,
-        /// <summary> Read Method has been started readding node </summary>
-        NodeStarted,
-        //Node,
+        Value,
         /// <summary> Read Method has been ended readding node </summary>
-        NodeEnded,
+        Node,
         
         /// <summary> An error occurs while reading </summary>
         Error

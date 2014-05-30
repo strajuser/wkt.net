@@ -36,38 +36,27 @@ namespace Wkt.NET.Linq
     /// <remarks>
     /// Can contains <see cref="WktNode">nodes</see>
     /// </remarks>
-    public class WktArray : WktValue
+    public class WktArray : WktValue, IList<WktValue>
     {
-        private readonly IEnumerable<WktValue> _values;
+        private readonly List<WktValue> _values;
 
         /// <summary>
         /// Creates array of values for WKT objects structure
         /// </summary>
         /// <param name="values">Array of values of WKT Array</param>
         public WktArray(params object[] values)
-            : base(values.Select(x => new WktValue(x)).ToArray())
+            : base(Utilities.CreateWktList(values).ToList())
         {
-            // TODO: Check if value
-            _values = (IEnumerable<WktValue>) Value;
+            _values = (List<WktValue>)Value;
         }
 
         /// <summary>
         /// Creates array of values for WKT objects structure
         /// </summary>
         /// <param name="values">Enumerable of values of WKT Array</param>
-        public WktArray(IEnumerable values) : this(values.Cast<object>().ToArray())
+        public WktArray(IEnumerable<object> values) : this(values.ToArray())
         {
-            
         }
-
-        //public virtual object this[string key]
-        //{
-        //    get
-        //    {
-        //        // TODO: ForFuture
-        //        throw new NotImplementedException();
-        //    }
-        //}
 
         /// <summary>
         /// Returns WKT Array as formated string (ex. ""WGS_1984", 6378137.0, 298.257223563")
@@ -80,5 +69,73 @@ namespace Wkt.NET.Linq
 
             return String.Join(",", objects.Select(x => x.ToString(provider)));
         }
+
+        #region | IList<WktValue> Members |
+
+        public IEnumerator<WktValue> GetEnumerator()
+        {
+            return (_values as IEnumerable<WktValue>).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return (_values as IEnumerable).GetEnumerator();
+        }
+
+        public void Add(WktValue item)
+        {
+            _values.Add(item);
+        }
+
+        public void Clear()
+        {
+            _values.Clear();
+        }
+
+        public bool Contains(WktValue item)
+        {
+            return _values.Contains(item);
+        }
+
+        public void CopyTo(WktValue[] array, int arrayIndex)
+        {
+            _values.CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(WktValue item)
+        {
+            return _values.Remove(item);
+        }
+
+        public int Count
+        {
+            get { return _values.Count; }
+        }
+        public bool IsReadOnly
+        {
+            get { return false; }
+        }
+        public int IndexOf(WktValue item)
+        {
+            return _values.IndexOf(item);
+        }
+
+        public void Insert(int index, WktValue item)
+        {
+            _values.Insert(index, item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            _values.RemoveAt(index);
+        }
+
+        public WktValue this[int index]
+        {
+            get { return _values[index]; }
+            set { _values[index] = value; }
+        }
+
+        #endregion
     }
 }

@@ -63,45 +63,77 @@ namespace Wkt.NET.IO
         /// <returns><c>true</c> if the next part was read successfully; <c>false</c> if there are nothing to read.</returns>
         public override bool Read()
         {
-            var buffer = new char[1];
-            while (_reader.Read(buffer, 0, 1) == 1)
+            while (true)
             {
-                if (ParseChar(buffer[0]))
+                var c = _reader.Peek();
+                if (c == -1 && !_buffer.IsEmpty())
+                {
+                    SetState(ReaderState.Value, _buffer.Flush());
+                    return true;
+                }
+
+                if (c == -1)
+                    break;
+
+                if (ProcessNextChar((char)c))
                     return true;
             }
+
+            SetState(ReaderState.Finished, null);
             return false;
+
+            //var buffer = new char[1];
+            //while (_reader.Read(buffer, 0, 1) == 1)
+            //{
+            //    if (ParseChar(buffer[0]))
+            //        return true;
+            //}
+
+            //if (_buffer.IsEmpty())
+            //{
+            //    SetState(ReaderState.Finished, null);
+            //    return false;
+            //}
+
+            //SetState(ReaderState.Value, _buffer.Flush());
+            //return true;
         }
 
         /// <summary>
-        /// Checking current char <paramref name="c"/>
+        /// Process the current char in reader and read next if need
         /// </summary>
-        /// <param name="c">Character to check</param>
-        /// <returns><c>true</c> if char is breaking delimiter, <c>false</c> otherwise</returns>
-        private bool ParseChar(char c)
+        /// <returns><c>true</c> if need to break process, <c>false</c> otherwise</returns>
+        private bool ProcessNextChar(char c)
         {
             switch (c)
             {
                 case ' ': case '\n': case '\r':
+                    _reader.Read();
+
                     if (CheckInStringValue())
                         _buffer.Append(c);
 
                     return false;
                     
                 case '\"':
+                    _reader.Read();
+
                     if (CheckInStringValue())
                     {
-                        SetState(ReaderState.ValueEnded, _buffer.Flush());
+                        SetState(ReaderState.Value, _buffer.Flush());
                         _delimeters.Pop();
                     }
                     else
                     {
-                        SetState(ReaderState.ValueStarted, null);
                         _delimeters.Push('\"');
+                        return false;
                     }
 
                     return true;
 
                 case '[':
+                    _reader.Read();
+
                     if (CheckInStringValue())
                     {
                         _buffer.Append(c);
@@ -109,34 +141,50 @@ namespace Wkt.NET.IO
                     }
 
                     _delimeters.Push('[');
-                    SetState(ReaderState.KeyEnded, _buffer.Flush());
+                    SetState(ReaderState.Key, _buffer.Flush());
                     return true;
 
                 case ']':
+                    // NOTE: not need to read if there is value ends with ']'
+
                     if (CheckInStringValue())
                     {
                         _buffer.Append(c);
+                        _reader.Read();
                         return false;
                     }
 
                     // TODO: Check, that last delimiter is '['
 
+                    if (!_buffer.IsEmpty())
+                    {
+                        SetState(ReaderState.Value, _buffer.Flush());
+                        return true;
+                    }
+
                     _delimeters.Pop();
-                    SetState(ReaderState.NodeEnded, _buffer.Flush());
+                    SetState(ReaderState.Node, _buffer.Flush());
+                    _reader.Read();
                     return true;
                 
                 case ',':
+                    _reader.Read();
+
                     if (CheckInStringValue())
                     {
                         _buffer.Append(c);
                         return false;
                     }
 
-                    SetState(ReaderState.ValueEnded, _buffer.Flush());
+                    if (_buffer.IsEmpty())
+                        return false;
+
+                    SetState(ReaderState.Value, _buffer.Flush());
                     return true;
                 
                 default:
                     _buffer.Append(c);
+                    _reader.Read();
                     return false;
             }
         }

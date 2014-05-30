@@ -23,37 +23,35 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Wkt.NET.Linq;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace Wkt.NET.Tests.Linq
+namespace Wkt.NET.Linq
 {
-    [TestClass]
-    public class WktArrayTests
+    /// <summary>
+    /// Helper class for transforming WktObjects
+    /// </summary>
+    internal static class Utilities
     {
-        [TestMethod]
-        public void Linq_Simple_Ctor()
+        /// <summary>
+        /// Transform source values to WktValue objects if it's need
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static IEnumerable<WktValue> CreateWktList(IEnumerable source)
         {
-            var array = new WktArray("String", 1, 2.1);
-
-            Assert.IsTrue(array.Count == 3);
-            Assert.IsTrue(array[0].Value is string);
-            Assert.IsTrue(array[1].Value is int);
-            Assert.IsTrue(array[2].Value is double);
+            return source.Cast<object>().Select(CreateWktValue);
         }
 
-        [TestMethod]
-        public void ToString_Simple()
+        /// <summary>
+        /// Transform source value to WktValue object if it's need
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static WktValue CreateWktValue(object value)
         {
-            var array = new WktArray("String", 1, 2.0);
-            Assert.AreEqual(array.ToString(), "\"String\",1,2.0");
-        }
-
-        [TestMethod]
-        public void ToString_With_Culture()
-        {
-            throw new NotImplementedException();
+            return value is WktValue ? (WktValue)value : new WktValue(value);
         }
     }
 }

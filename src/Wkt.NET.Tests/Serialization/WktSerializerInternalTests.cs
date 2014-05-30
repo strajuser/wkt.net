@@ -35,6 +35,17 @@ namespace Wkt.NET.Tests.Serialization
     public class WktSerializerInternalTests
     {
         [TestMethod]
+        public void Deserialize_WktValue()
+        {
+            const string data = "str";
+            using (var serializer = new WktSerializerInternal(new WktTextReader(data)))
+            {
+                var rez = serializer.Deserialize();
+                Assert.IsTrue(rez is WktValue);
+            }
+        }
+
+        [TestMethod]
         public void Deserialize_WktNode()
         {
             const string data = "PROJCS[\"Name\"]";
