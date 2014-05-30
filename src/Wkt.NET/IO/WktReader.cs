@@ -103,6 +103,12 @@ namespace Wkt.NET.IO
                     return val;
             }
 
+            // If string is like '"smth"' - remove double quotes
+            if (value.StartsWith("\""))
+                value = value.Substring(1, value.Length - 1);
+            if (value.EndsWith("\""))
+                value = value.Substring(0, value.Length - 1);
+
             return value;
         }
 

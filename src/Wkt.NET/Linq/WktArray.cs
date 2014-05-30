@@ -58,18 +58,6 @@ namespace Wkt.NET.Linq
         {
         }
 
-        /// <summary>
-        /// Returns WKT Array as formated string (ex. ""WGS_1984", 6378137.0, 298.257223563")
-        /// </summary>
-        /// <param name="provider">FormatProvider for Value</param>
-        /// <returns></returns>
-        public override string ToString(IFormatProvider provider)
-        {
-            var objects = (IEnumerable<WktValue>) Value;
-
-            return String.Join(",", objects.Select(x => x.ToString(provider)));
-        }
-
         #region | IList<WktValue> Members |
 
         public IEnumerator<WktValue> GetEnumerator()
@@ -137,5 +125,34 @@ namespace Wkt.NET.Linq
         }
 
         #endregion
+
+        /// <summary>
+        /// Gets items by key in collection. If there's single element - returns WktValue, otherwise WktArray
+        /// </summary>
+        /// <param name="key">Key of element</param>
+        /// <returns></returns>
+        public WktValue this[string key]
+        {
+            get
+            {
+                var nodes = _values.OfType<WktNode>().ToList();
+                if (nodes.Count(x => x.Key == key) <= 1)
+                    return nodes.FirstOrDefault(x => x.Key == key);
+
+                return new WktArray(nodes.Where(x => x.Key == key));
+            }
+        }
+
+        /// <summary>
+        /// Returns WKT Array as formated string (ex. ""WGS_1984", 6378137.0, 298.257223563")
+        /// </summary>
+        /// <param name="provider">FormatProvider for Value</param>
+        /// <returns></returns>
+        public override string ToString(IFormatProvider provider)
+        {
+            var objects = (IEnumerable<WktValue>)Value;
+
+            return String.Join(",", objects.Select(x => x.ToString(provider)));
+        }
     }
 }

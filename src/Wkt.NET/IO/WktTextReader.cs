@@ -81,22 +81,6 @@ namespace Wkt.NET.IO
 
             SetState(ReaderState.Finished, null);
             return false;
-
-            //var buffer = new char[1];
-            //while (_reader.Read(buffer, 0, 1) == 1)
-            //{
-            //    if (ParseChar(buffer[0]))
-            //        return true;
-            //}
-
-            //if (_buffer.IsEmpty())
-            //{
-            //    SetState(ReaderState.Finished, null);
-            //    return false;
-            //}
-
-            //SetState(ReaderState.Value, _buffer.Flush());
-            //return true;
         }
 
         /// <summary>
@@ -117,6 +101,7 @@ namespace Wkt.NET.IO
                     
                 case '\"':
                     _reader.Read();
+                    _buffer.Append(c);
 
                     if (CheckInStringValue())
                     {
