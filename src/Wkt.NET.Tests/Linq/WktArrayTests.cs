@@ -41,6 +41,47 @@ namespace Wkt.NET.Tests.Linq
             Assert.IsTrue(array[0].Value is string);
             Assert.IsTrue(array[1].Value is int);
             Assert.IsTrue(array[2].Value is double);
+
+            array = new WktArray();
+            Assert.IsTrue(array.Count == 0);
+
+            array = new WktArray("str");
+            Assert.IsTrue(array.Count == 1);
+
+            array = new WktArray(1, 2);
+            Assert.IsTrue(array.Count == 2);
+
+            array = new WktArray(new WktArray(1, 2));
+            Assert.IsTrue(array.Count == 2);
+
+            array = new WktArray(new []{1, 2}, 3);
+            Assert.IsTrue(array.Count == 3);
+
+            array = new WktArray(new[] { 1, 2 }, new[] {"s"});
+            Assert.IsTrue(array.Count == 3);
+
+            array = new WktArray(new[] { 1, 2 }, new WktArray(), new[] { "s" });
+            Assert.IsTrue(array.Count == 3);
+
+            array = new WktArray(new[] { 1, 2 }, new WktArray(1, 2), new[] { "s" });
+            Assert.IsTrue(array.Count == 5);
+        }
+
+        [TestMethod]
+        public void Linq_Complex_Ctor()
+        {
+            var array = new WktArray(new WktNode("Key", 1));
+            Assert.IsTrue(array.Count == 1);
+            Assert.IsTrue(array[0] is WktNode);
+
+            array = new WktArray(1, new WktNode("Key", 1));
+            Assert.IsTrue(array.Count == 2);
+
+            array = new WktArray(1, new WktNode("Key", 1, 2));
+            Assert.IsTrue(array.Count == 2);
+
+            array = new WktArray(1, new WktNode("Key", 1, 2), new [] { 1, 2});
+            Assert.IsTrue(array.Count == 3);
         }
 
         [TestMethod]
@@ -48,6 +89,33 @@ namespace Wkt.NET.Tests.Linq
         {
             var array = new WktArray("String", 1, 2.0);
             Assert.AreEqual(array.ToString(), "\"String\",1,2.0");
+        }
+
+        [TestMethod]
+        public void KeyIndexer_Single()
+        {
+            var array = new WktArray("String", 1, 2.0);
+            Assert.IsNull(array["KEY"]);
+
+            array = new WktArray(new WktNode("KEY", 1));
+            Assert.IsNotNull(array["KEY"]);
+            Assert.AreSame(array["KEY"], array[0]);
+
+            array = new WktArray(
+                new WktNode("KEY", 1),
+                new WktNode("KEY", 2));
+            Assert.IsNotNull(array["KEY"]);
+            Assert.IsTrue(array["KEY"] is WktArray);
+            Assert.IsTrue(((WktArray)array["KEY"]).Count == 2);
+
+            array = new WktArray(
+                "str",
+                new WktNode("KEY", 1),
+                new WktNode("KEY", 2));
+            Assert.IsNotNull(array["KEY"]);
+            Assert.IsTrue(array["KEY"] is WktArray);
+            Assert.IsTrue(((WktArray)array["KEY"]).Count == 2);
+            Assert.AreSame(array[1], ((WktArray)array["KEY"])[0]);
         }
 
         [TestMethod]

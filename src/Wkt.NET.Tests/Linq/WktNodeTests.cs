@@ -63,7 +63,68 @@ namespace Wkt.NET.Tests.Linq
             Assert.AreEqual(node.Key, "PROJECTION");
             Assert.IsTrue(node.Count == 1);
             Assert.AreEqual(node[0].Value, "Mercator_Auxiliary_Sphere");
+
+            // KEY[]
+            node = new WktNode("KEY");
+            Assert.IsTrue(node.Count == 0);
+            Assert.AreEqual(node.Key, "KEY");
+
+            // KEY["str"]
+            node = new WktNode("KEY", "str");
+            Assert.IsTrue(node.Count == 1);
+
+            // KEY[1]
+            node = new WktNode("KEY", 1);
+            Assert.IsTrue(node.Count == 1);
+
+            // KEY[1,2]
+            node = new WktNode("KEY", 1, 2);
+            Assert.IsTrue(node.Count == 2);
+
+            // KEY[1,2]
+            node = new WktNode("KEY", new WktArray(1, 2));
+            Assert.IsTrue(node.Count == 2);
+
+            // KEY[KEY[1,2]]
+            node = new WktNode("KEY", new WktNode("KEY", 1, 2));
+            Assert.IsTrue(node.Count == 1);
+
+            // KEY[1,2,3]
+            node = new WktNode("KEY", 1, new WktArray(2, 3));
+            Assert.IsTrue(node.Count == 3);
+
+            // KEY[1,KEY[2,3]]
+            node = new WktNode("KEY", 1, new WktNode("KEY", 2, 3));
+            Assert.IsTrue(node.Count == 2);
+
+            // KEY[1,2,"1","2"]
+            node = new WktNode("KEY", new[] {1, 2}, new[] {"1", "2"});
+            Assert.IsTrue(node.Count == 4);
+
+            // KEY[1,2,KEY[],"1","2"]
+            node = new WktNode("KEY", new[] { 1, 2 }, new WktNode("KEY"), new[] { "1", "2" });
+            Assert.IsTrue(node.Count == 5);
+
+            // KEY[1,2,3,KEY[],"1","2"]
+            node = new WktNode("KEY", new[] { 1, 2 }, 3, new WktNode("KEY"), new[] { "1", "2" });
+            Assert.IsTrue(node.Count == 6);
         }
+
+        //[TestMethod]
+        //public void Linq_List_AddMembers()
+        //{
+        //    var node = new WktNode("KEY");
+        //    Assert.IsTrue(node.Count == 0);
+
+        //    node.Add(new WktValue(1));
+        //    Assert.IsTrue(node[0].Value is int);
+        //    Assert.AreEqual(node[0].Value, 1);
+
+        //    node.Add(1);
+        //    Assert.IsTrue(node.Count == 2);
+        //    Assert.IsTrue(node[1].Value is int);
+        //    Assert.AreEqual(node[1].Value, 1);
+        //}
 
         [TestMethod]
         public void Linq_Params_Ctor()
