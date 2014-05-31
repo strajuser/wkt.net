@@ -112,22 +112,16 @@ namespace Wkt.NET.IO
                 return value;
             }
 
-            // TODO: make better performance without exceptions
-            try
             {
-                return Convert.ToInt32(value, Culture);
+                int val;
+                if (int.TryParse(value, NumberStyles.Integer, Culture, out val))
+                    return val;
             }
-            catch (FormatException)
             {
+                double val;
+                if (double.TryParse(value, NumberStyles.Any, Culture, out val))
+                    return val;
             }
-            try
-            {
-                return Convert.ToDouble(value, Culture);
-            }
-            catch (FormatException)
-            {
-            }
-
             {
                 DateTime val;
                 if (DateTime.TryParse(value, Culture, DateTimeStyles.None, out val))

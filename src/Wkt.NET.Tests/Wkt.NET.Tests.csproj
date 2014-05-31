@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IO\WktReaderTests.cs" />
     <Compile Include="IO\WktTextReaderTests.cs" />
     <Compile Include="Linq\WktArrayTests.cs" />
     <Compile Include="Linq\WktNodeTests.cs" />
