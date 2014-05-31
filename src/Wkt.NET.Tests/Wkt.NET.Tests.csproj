@@ -50,6 +50,7 @@
     <Compile Include="Linq\WktArrayTests.cs" />
     <Compile Include="Linq\WktNodeTests.cs" />
     <Compile Include="Linq\WktValueTests.cs" />
+    <Compile Include="PerformanceTests.cs" />
     <Compile Include="Serialization\WktSerializerInternalTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

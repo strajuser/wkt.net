@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Wkt.NET.IO;
 using Wkt.NET.Linq;
@@ -51,34 +52,45 @@ namespace Wkt.NET.Tests.Serialization
             const string data = "PROJCS[\"Name\"]";
             using (var serializer = new WktSerializerInternal(new WktTextReader(data)))
             {
-                var rez = serializer.Deserialize();
-                Assert.IsTrue(rez is WktNode);
+                var node = serializer.Deserialize();
+                Assert.IsTrue(node is WktNode);
             }
         }
 
         [TestMethod]
-        public void Deserialize_WktArray()
+        public void Deserialize_WktNodeArray()
         {
             const string data = "PROJCS[\"Name\", \"Name2\"]";
             using (var serializer = new WktSerializerInternal(new WktTextReader(data)))
             {
-                var rez = serializer.Deserialize() as WktNode;
-                Assert.IsTrue(rez != null);
-                Assert.IsTrue(rez.Value is WktArray);
+                var node = serializer.Deserialize() as WktNode;
+                Assert.IsTrue(node != null);
+                Assert.IsTrue(node.Count == 2);
+                Assert.IsTrue(node[0].Value is String);
             }
         }
 
         [TestMethod]
         public void Deserialize_ComplexWkt()
         {
-            throw new NotImplementedException();
-            //const string data = "PROJCS[\"WGS_1984_Web_Mercator_Auxiliary_Sphere\",GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.017453292519943295]],PROJECTION[\"Mercator_Auxiliary_Sphere\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",0.0],PARAMETER[\"Standard_Parallel_1\",0.0],PARAMETER[\"Auxiliary_Sphere_Type\",0.0],UNIT[\"Meter\",1.0]]";
-            //using (var serializer = new WktSerializerInternal(new WktTextReader(data)))
-            //{
-            //    var rez = serializer.Deserialize() as WktNode;
-            //    Assert.IsTrue(rez != null);
-            //    Assert.IsTrue(rez.Value is WktArray);
-            //}
+            const string data = "PROJCS[\"WGS_1984_Web_Mercator_Auxiliary_Sphere\",GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.017453292519943295]],PROJECTION[\"Mercator_Auxiliary_Sphere\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",0.0],PARAMETER[\"Standard_Parallel_1\",0.0],PARAMETER[\"Auxiliary_Sphere_Type\",0.0],UNIT[\"Meter\",1.0]]";
+            using (var serializer = new WktSerializerInternal(new WktTextReader(data)))
+            {
+                var node = serializer.Deserialize() as WktNode;
+                
+                Assert.IsNotNull(node);
+                Assert.AreEqual(node[0].Value, "WGS_1984_Web_Mercator_Auxiliary_Sphere");
+                Assert.IsTrue(node.OfType<WktNode>().Count() == 8);
+                Assert.IsTrue(node.OfType<WktNode>().Count(x => x.Key == "PARAMETER") == 5);
+
+                var node2 = node[1] as WktNode;
+                Assert.IsNotNull(node2);
+                Assert.AreEqual(node2.Key, "GEOGCS");
+                Assert.AreEqual(node2[0].Value, "GCS_WGS_1984");
+                Assert.IsTrue(node2.Count == 4);
+                Assert.IsTrue(node2.Last() is WktNode);
+                Assert.AreEqual(((WktNode)node2.Last()).Key, "UNIT");
+            }
         }
     }
 }

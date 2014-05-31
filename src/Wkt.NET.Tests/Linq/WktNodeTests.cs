@@ -171,7 +171,7 @@ namespace Wkt.NET.Tests.Linq
             Assert.AreEqual(node.ToString(), "PROJCS[\"WGS_1984_Web_Mercator_Auxiliary_Sphere\",PROJECTION[\"Mercator_Auxiliary_Sphere\"],PARAMETER[\"False_Easting\",0.0]]");
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void ToString_With_Culture()
         {
             throw new NotImplementedException();

@@ -68,8 +68,33 @@ namespace Wkt.NET.IO
             Value = ParseValue(value);
         }
 
+
         /// <summary>
-        /// Tryes to parse string data and convert to closest data type
+        /// Sets state and value with parsing and casting value data to closest data type
+        /// </summary>
+        /// <param name="stateValue">Class with State and Value</param>
+        protected void SetState(StateValue stateValue)
+        {
+            SetState(stateValue.State, stateValue.Value);
+        }
+
+        /// <summary>
+        /// Class for union of state and value in queues
+        /// </summary>
+        protected class StateValue
+        {
+            public ReaderState State { get; private set; }
+            public string Value { get; private set; }
+
+            public StateValue(ReaderState state, string value)
+            {
+                Value = value;
+                State = state;
+            }
+        }
+
+        /// <summary>
+        /// Try to parse string data and convert to closest data type
         /// </summary>
         /// <param name="value">String value</param>
         /// <returns>Parsed value</returns>
@@ -78,20 +103,31 @@ namespace Wkt.NET.IO
             if (String.IsNullOrEmpty(value))
                 return null;
 
+            // If string is like '"smth"' - remove double quotes and make string
+            if (value.StartsWith("\""))
             {
-                try
-                {
-                    return Convert.ToInt32(value, Culture);
-                }
-                catch (FormatException) { }
+                value = value.Substring(1, value.Length - 1);
+                if (value.EndsWith("\""))
+                    value = value.Substring(0, value.Length - 1);
+                return value;
             }
+
+            // TODO: make better performance without exceptions
+            try
             {
-                try
-                {
-                    return Convert.ToDouble(value, Culture);
-                }
-                catch (FormatException) { }
+                return Convert.ToInt32(value, Culture);
             }
+            catch (FormatException)
+            {
+            }
+            try
+            {
+                return Convert.ToDouble(value, Culture);
+            }
+            catch (FormatException)
+            {
+            }
+
             {
                 DateTime val;
                 if (DateTime.TryParse(value, Culture, DateTimeStyles.None, out val))
@@ -102,12 +138,6 @@ namespace Wkt.NET.IO
                 if (Guid.TryParse(value, out val))
                     return val;
             }
-
-            // If string is like '"smth"' - remove double quotes
-            if (value.StartsWith("\""))
-                value = value.Substring(1, value.Length - 1);
-            if (value.EndsWith("\""))
-                value = value.Substring(0, value.Length - 1);
 
             return value;
         }
