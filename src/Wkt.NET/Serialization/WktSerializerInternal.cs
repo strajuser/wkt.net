@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Wkt.NET.Enum;
+using Wkt.NET.Exceptions;
 using Wkt.NET.IO;
 using Wkt.NET.Linq;
 
@@ -54,7 +55,8 @@ namespace Wkt.NET.Serialization
             while (_reader.Read())
                 ProcessReaderState();
 
-            //TODO: throw Exception if _stack contains several elements
+            ProcessStack();
+
             return _stack.Pop();
         }
 
@@ -104,6 +106,39 @@ namespace Wkt.NET.Serialization
                     }
                 }
                     break;
+            }
+        }
+        
+        /// <summary>
+        /// Process stack until it empty or first key
+        /// </summary>
+        /// <returns></returns>
+        private void ProcessStack()
+        {
+            if (_stack.Count == 1)
+                return;
+
+            // If node ended get data from stack until KeyToken, and replace this data with WktNode
+            var values = new List<object>();
+            while (_stack.Any())
+            {
+                var temp = _stack.Pop();
+                var key = temp as KeyToken;
+                if (key != null)
+                {
+                    values.Reverse();
+                    var node = new WktNode(key.Key, values);
+                    _stack.Push(node);
+                    break;
+                }
+
+                values.Add(temp);
+            }
+
+            if (!_stack.Any())
+            {
+                values.Reverse();
+                _stack.Push(new WktArray(values));
             }
         }
 

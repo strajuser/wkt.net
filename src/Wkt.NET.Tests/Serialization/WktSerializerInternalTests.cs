@@ -26,9 +26,11 @@
 using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Wkt.NET.Exceptions;
 using Wkt.NET.IO;
 using Wkt.NET.Linq;
 using Wkt.NET.Serialization;
+using Wkt.NET.Tests.TestUtilities;
 
 namespace Wkt.NET.Tests.Serialization
 {
@@ -90,6 +92,17 @@ namespace Wkt.NET.Tests.Serialization
                 Assert.IsTrue(node2.Count == 4);
                 Assert.IsTrue(node2.Last() is WktNode);
                 Assert.AreEqual(((WktNode)node2.Last()).Key, "UNIT");
+            }
+        }
+
+        [TestMethod]
+        public void BrokenDelimiters()
+        {
+            const string data = "1, 2]";
+
+            using (var serializer = new WktSerializerInternal(new WktTextReader(data)))
+            {
+                ExceptionAssert.Throws<WktException>("Error parsing input data, position: 5. Bad closing ']'", () => serializer.Deserialize());
             }
         }
     }

@@ -54,6 +54,7 @@
     <Compile Include="PerformanceTests.cs" />
     <Compile Include="Serialization\WktSerializerInternalTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestUtilities\ExceptionAssert.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wkt.NET\Wkt.NET.csproj">

@@ -28,6 +28,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Wkt.NET.Enum;
+using Wkt.NET.Exceptions;
+using Wkt.NET.Interfaces;
 using Wkt.NET.Utilities;
 
 namespace Wkt.NET.IO
@@ -35,14 +37,14 @@ namespace Wkt.NET.IO
     /// <summary>
     /// Reader that reads WKT-data from TextReader, Stream or String
     /// </summary>
-    internal class WktTextReader : WktReader
+    internal class WktTextReader : WktReader, IPositionProvider
     {
         private readonly TextReader _reader;
         private readonly StringBuffer _buffer = new StringBuffer(1024);
         // Internal Stack with delimiters to validate
         private readonly Stack<char> _delimeters = new Stack<char>();
 
-        // Max queue state is 2 - at the end of node
+        // Max queue length is 2 - at the end of node
         private readonly Queue<StateValue> _stateQueue = new Queue<StateValue>(2);
 
         private WktTextReader(TextReader reader)
@@ -75,6 +77,7 @@ namespace Wkt.NET.IO
                 }
 
                 var c = _reader.Read();
+                _pos++;
                 if (c == -1 && !_buffer.IsEmpty())
                 {
                     SetState(ReaderState.Value, _buffer.Flush());
@@ -134,7 +137,8 @@ namespace Wkt.NET.IO
                         return;
                     }
 
-                    // TODO: Check, that last delimiter is '['
+                    if (_delimeters.Count == 0 || _delimeters.Peek() != '[')
+                        throw WktException.Create(this, "Bad closing ']'");
 
                     if (!_buffer.IsEmpty())
                         _stateQueue.Enqueue(new StateValue(ReaderState.Value, _buffer.Flush()));
@@ -179,6 +183,12 @@ namespace Wkt.NET.IO
 
             return false;
         }
+
+        private int _pos;
+        /// <summary>
+        /// Gets current position of reader
+        /// </summary>
+        public int CurrentPosition { get { return _pos; } }
 
         protected override void Dispose(bool disposing)
         {

@@ -40,6 +40,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enum\ReaderState.cs" />
+    <Compile Include="Exceptions\WktException.cs" />
+    <Compile Include="Interfaces\IPositionProvider.cs" />
     <Compile Include="Linq\WktArray.cs" />
     <Compile Include="Linq\WktNode.cs" />
     <Compile Include="Linq\ObjFactory.cs" />
@@ -50,11 +52,10 @@
     <Compile Include="Serialization\WktSerializer.cs" />
     <Compile Include="Serialization\WktSerializerInternal.cs" />
     <Compile Include="Utilities\StringBuffer.cs" />
+    <Compile Include="Utilities\StringExtensions.cs" />
     <Compile Include="WktConvert.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Exceptions\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
