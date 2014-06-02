@@ -55,6 +55,7 @@
     <Compile Include="Serialization\WktSerializerInternalTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestUtilities\ExceptionAssert.cs" />
+    <Compile Include="TestUtilities\WktReaderExtensions.cs" />
     <Compile Include="WktConvertTests.cs" />
   </ItemGroup>
   <ItemGroup>

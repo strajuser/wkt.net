@@ -33,43 +33,43 @@ namespace Wkt.NET.Tests.TestUtilities
     /// </summary>
     internal class ExceptionAssert
     {
-        public static void Throws<TException>(string message, Action action)
+        public static void Throws<TException>(string message, Action action, string assertMessage = null)
             where TException : Exception
         {
             try
             {
                 action();
 
-                Assert.Fail("Exception of type {0} expected; got none exception", typeof (TException).Name);
+                Assert.Fail(assertMessage + Environment.NewLine + "Exception of type {0} expected; got none exception", typeof(TException).Name);
             }
             catch (TException ex)
             {
                 if (message != null)
                     Assert.AreEqual(message, ex.Message,
-                        "Unexpected exception message." + Environment.NewLine + "Expected: " + message + Environment.NewLine + "Got: " + ex.Message +
+                        assertMessage + Environment.NewLine + "Unexpected exception message." + Environment.NewLine + "Expected: " + message + Environment.NewLine + "Got: " + ex.Message +
                         Environment.NewLine + Environment.NewLine + ex);
             }
             catch (Exception ex)
             {
                 throw new Exception(
-                    string.Format("Exception of type {0} expected; got exception of type {1}.", typeof (TException).Name, ex.GetType().Name), ex);
+                    string.Format(assertMessage + Environment.NewLine + "Exception of type {0} expected; got exception of type {1}.", typeof(TException).Name, ex.GetType().Name), ex);
             }
         }
 
-        public static void Throws<TException>(Action action)
+        public static void Throws<TException>(Action action, string assertMessage = null)
             where TException : Exception
         {
             try
             {
                 action();
 
-                Assert.Fail("Exception of type {0} expected; got none exception", typeof(TException).Name);
+                Assert.Fail(assertMessage + Environment.NewLine + "Exception of type {0} expected; got none exception", typeof(TException).Name);
             }
             catch (TException) { }
             catch (Exception ex)
             {
                 throw new Exception(
-                    string.Format("Exception of type {0} expected; got exception of type {1}.", typeof(TException).Name, ex.GetType().Name), ex);
+                    string.Format(assertMessage + Environment.NewLine + "Exception of type {0} expected; got exception of type {1}.", typeof(TException).Name, ex.GetType().Name), ex);
             }
         }
     }

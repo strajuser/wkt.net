@@ -23,9 +23,12 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Wkt.NET.Enum;
+using Wkt.NET.Exceptions;
 using Wkt.NET.IO;
+using Wkt.NET.Tests.TestUtilities;
 
 namespace Wkt.NET.Tests.IO
 {
@@ -311,6 +314,22 @@ namespace Wkt.NET.Tests.IO
                 Assert.IsTrue(reader.State == ReaderState.Finished);
                 Assert.IsNull(reader.Value);
             }
+        }
+
+        [TestMethod]
+        public void ThrowsOnBrokenData()
+        {
+            var brokenData = new[]
+            {
+                "[1,", "1,", "(1,", "(,", ",1", "1)", "1,)", ",)",
+                "1\"", "\"1\", "
+            };
+
+            foreach(var data in brokenData)
+                using (var reader = new WktTextReader(data))
+                {
+                    ExceptionAssert.Throws<WktException>(() => reader.Read(100), data);
+                }
         }
     }
 }
