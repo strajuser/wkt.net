@@ -163,7 +163,7 @@ namespace Wkt.NET.IO
 
                     if (!_buffer.IsEmpty())
                         EnqueueValue();
-                    else if (isArray)
+                    else if (_isArray)
                         throw WktException.Create(this, "Expected value");
 
                     _delimeters.Pop();
@@ -197,7 +197,7 @@ namespace Wkt.NET.IO
 
                     if (!_buffer.IsEmpty())
                         EnqueueValue();
-                    else if (isArray)
+                    else if (_isArray)
                         throw WktException.Create(this, "Expected value");
 
                     _delimeters.Pop();
@@ -213,7 +213,7 @@ namespace Wkt.NET.IO
 
                     if (!_buffer.IsEmpty())
                         EnqueueValue();
-                    isArray = true;
+                    _isArray = true;
                     break;
                 
                 default:
@@ -234,10 +234,10 @@ namespace Wkt.NET.IO
             throw WktException.Create(this, "Unknown delimiter {0}".Format(lastDelimiter));
         }
 
-        private bool isArray;
+        private bool _isArray;
         private void EnqueueValue()
         {
-            isArray = false;
+            _isArray = false;
             _stateQueue.Enqueue(new StateValue(ReaderState.Value, _buffer.Flush()));
         }
 
