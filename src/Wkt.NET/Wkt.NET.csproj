@@ -51,6 +51,7 @@
     <Compile Include="IO\WktTextReader.cs" />
     <Compile Include="Serialization\WktSerializer.cs" />
     <Compile Include="Serialization\WktSerializerInternal.cs" />
+    <Compile Include="Utilities\PeekOrDefaultExtensions.cs" />
     <Compile Include="Utilities\StringBuffer.cs" />
     <Compile Include="Utilities\StringExtensions.cs" />
     <Compile Include="WktConvert.cs" />

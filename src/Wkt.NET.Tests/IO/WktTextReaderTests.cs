@@ -244,5 +244,73 @@ namespace Wkt.NET.Tests.IO
                 Assert.IsNull(reader.Value);
             }
         }
+
+        [TestMethod]
+        public void ParseWhiteSpaceData()
+        {
+            const string data = @"KEY[1 2]";
+
+            using (var reader = new WktTextReader(data))
+            {
+                var rez = reader.Read();
+                Assert.IsTrue(rez);
+                Assert.IsTrue(reader.State == ReaderState.Key);
+                Assert.AreEqual(reader.Value, "KEY");
+
+                rez = reader.Read();
+                Assert.IsTrue(rez);
+                Assert.IsTrue(reader.State == ReaderState.Value);
+                Assert.IsTrue(reader.Value is int);
+
+                rez = reader.Read();
+                Assert.IsTrue(rez);
+                Assert.IsTrue(reader.State == ReaderState.Value);
+                Assert.IsTrue(reader.Value is int);
+
+                rez = reader.Read();
+                Assert.IsTrue(rez);
+                Assert.IsTrue(reader.State == ReaderState.Node);
+                Assert.IsNull(reader.Value);
+
+                rez = reader.Read();
+                Assert.IsFalse(rez);
+                Assert.IsTrue(reader.State == ReaderState.Finished);
+                Assert.IsNull(reader.Value);
+            }
+        }
+
+        [TestMethod]
+        public void ParseParenthesesData()
+        {
+            const string data = @"POINT(1 2)";
+
+            using (var reader = new WktTextReader(data))
+            {
+                var rez = reader.Read();
+                Assert.IsTrue(rez);
+                Assert.IsTrue(reader.State == ReaderState.Key);
+                Assert.AreEqual(reader.Value, "POINT");
+
+                rez = reader.Read();
+                Assert.IsTrue(rez);
+                Assert.IsTrue(reader.State == ReaderState.Value);
+                Assert.IsTrue(reader.Value is int);
+
+                rez = reader.Read();
+                Assert.IsTrue(rez);
+                Assert.IsTrue(reader.State == ReaderState.Value);
+                Assert.IsTrue(reader.Value is int);
+
+                rez = reader.Read();
+                Assert.IsTrue(rez);
+                Assert.IsTrue(reader.State == ReaderState.Node);
+                Assert.IsNull(reader.Value);
+
+                rez = reader.Read();
+                Assert.IsFalse(rez);
+                Assert.IsTrue(reader.State == ReaderState.Finished);
+                Assert.IsNull(reader.Value);
+            }
+        }
     }
 }

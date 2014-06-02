@@ -69,7 +69,7 @@ namespace Wkt.NET.Serialization
             {
                 case ReaderState.Key:
                 {
-                    var key = _reader.Value.ToString();
+                    var key = _reader.Value == null ? null : _reader.Value.ToString();
                     _stack.Push(new KeyToken(key));
                 }
                     break;

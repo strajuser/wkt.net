@@ -102,7 +102,7 @@ namespace Wkt.NET.Tests.Serialization
 
             using (var serializer = new WktSerializerInternal(new WktTextReader(data)))
             {
-                ExceptionAssert.Throws<WktException>("Error parsing input data, position: 5. Bad closing ']'", () => serializer.Deserialize());
+                ExceptionAssert.Throws<WktException>("Error parsing input data, position: 5. Bad closing ']', expected ''", () => serializer.Deserialize());
             }
         }
     }

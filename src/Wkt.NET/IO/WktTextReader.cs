@@ -42,7 +42,7 @@ namespace Wkt.NET.IO
         private readonly TextReader _reader;
         private readonly StringBuffer _buffer = new StringBuffer(1024);
         // Internal Stack with delimiters to validate
-        private readonly Stack<char> _delimeters = new Stack<char>();
+        private readonly Stack<char?> _delimeters = new Stack<char?>();
 
         // Max queue length is 2 - at the end of node
         private readonly Queue<StateValue> _stateQueue = new Queue<StateValue>(2);
@@ -84,7 +84,14 @@ namespace Wkt.NET.IO
                     return true;
                 }
                 if (c == -1)
+                {
+                    // Check if _delimiters are empty
+                    var delimiter = _delimeters.PeekOrDefault();
+                    if (delimiter != null)
+                        throw WktException.Create(this, "Expected '{0}'".Format(delimiter));
+
                     break;
+                }
 
                 ProcessNextChar((char) c);
             }
@@ -100,7 +107,7 @@ namespace Wkt.NET.IO
         {
             switch (c)
             {
-                case ' ': case '\n': case '\r':
+                case '\n': case '\r':
                     if (CheckInStringValue())
                         _buffer.Append(c);
                     break;
@@ -110,10 +117,57 @@ namespace Wkt.NET.IO
 
                     if (CheckInStringValue())
                     {
-                        _stateQueue.Enqueue(new StateValue(ReaderState.Value, _buffer.Flush()));
+                        EnqueueValue();
                         _delimeters.Pop();
                     }
                     else _delimeters.Push('\"');
+
+                    break;
+
+                case ' ':
+                    if (CheckInStringValue())
+                    {
+                        _buffer.Append(c);
+                        return;
+                    }
+
+                    if (!_buffer.IsEmpty())
+                        EnqueueValue();
+
+                    break;
+
+                case '(':
+                    if (CheckInStringValue())
+                    {
+                        _buffer.Append(c);
+                        return;
+                    }
+                    
+                    _delimeters.Push('(');
+                    _stateQueue.Enqueue(new StateValue(ReaderState.Key, _buffer.Flush()));
+                    
+                    break;
+
+                case ')':
+                    if (CheckInStringValue())
+                    {
+                        _buffer.Append(c);
+                        return;
+                    }
+
+                    {
+                        var delimiter = _delimeters.PeekOrDefault();
+                        if (delimiter != '(')
+                            throw WktException.Create(this, "Bad closing ')', expected '{0}'".Format(GetExpectedDelimiter(delimiter)));
+                    }
+
+                    if (!_buffer.IsEmpty())
+                        EnqueueValue();
+                    else if (isArray)
+                        throw WktException.Create(this, "Expected value");
+
+                    _delimeters.Pop();
+                    _stateQueue.Enqueue(new StateValue(ReaderState.Node, _buffer.Flush()));
 
                     break;
 
@@ -129,19 +183,22 @@ namespace Wkt.NET.IO
                     break;
 
                 case ']':
-                    // NOTE: not need to read if there is value ends with ']'
-
                     if (CheckInStringValue())
                     {
                         _buffer.Append(c);
                         return;
                     }
 
-                    if (_delimeters.Count == 0 || _delimeters.Peek() != '[')
-                        throw WktException.Create(this, "Bad closing ']'");
+                    {
+                        var delimiter = _delimeters.PeekOrDefault();
+                        if (delimiter != '[')
+                            throw WktException.Create(this, "Bad closing ']', expected '{0}'".Format(GetExpectedDelimiter(delimiter)));
+                    }
 
                     if (!_buffer.IsEmpty())
-                        _stateQueue.Enqueue(new StateValue(ReaderState.Value, _buffer.Flush()));
+                        EnqueueValue();
+                    else if (isArray)
+                        throw WktException.Create(this, "Expected value");
 
                     _delimeters.Pop();
                     _stateQueue.Enqueue(new StateValue(ReaderState.Node, _buffer.Flush()));
@@ -155,13 +212,33 @@ namespace Wkt.NET.IO
                     }
 
                     if (!_buffer.IsEmpty())
-                        _stateQueue.Enqueue(new StateValue(ReaderState.Value, _buffer.Flush()));
+                        EnqueueValue();
+                    isArray = true;
                     break;
                 
                 default:
                     _buffer.Append(c);
                     break;
             }
+        }
+
+        private char? GetExpectedDelimiter(char? lastDelimiter)
+        {
+            switch (lastDelimiter)
+            {
+                case '"': return '"';
+                case '[': return ']';
+                case '(': return ')';
+                case null: return null;
+            }
+            throw WktException.Create(this, "Unknown delimiter {0}".Format(lastDelimiter));
+        }
+
+        private bool isArray;
+        private void EnqueueValue()
+        {
+            isArray = false;
+            _stateQueue.Enqueue(new StateValue(ReaderState.Value, _buffer.Flush()));
         }
 
         /// <summary>
