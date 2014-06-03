@@ -26,25 +26,11 @@
 namespace Wkt.NET.Enum
 {
     /// <summary>
-    /// Specifies current state of the reader
+    /// Specifies array type - Parentheses or SquareBrackets
     /// </summary>
-    internal enum ReaderState
+    public enum ArrayType
     {
-        /// <summary> Reader is initialized, Read() has not been called </summary>
-        Start,
-        /// <summary> The end has been reached </summary>
-        Finished,
-
-        /// <summary> Read Method has been ended readding key </summary>
-        Key,
-        /// <summary> Read Method has been ended readding value </summary>
-        Value,
-        /// <summary> Read Method has been ended readding node with square brackets </summary>
-        NodeSquareBrackets,
-        /// <summary> Read Method has been ended readding node with parentheses </summary>
-        NodeParentheses,
-        
-        /// <summary> An error occurs while reading </summary>
-        Error
+        SquareBrackets,
+        Parentheses
     }
 }

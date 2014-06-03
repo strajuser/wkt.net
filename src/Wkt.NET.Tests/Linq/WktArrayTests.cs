@@ -25,6 +25,7 @@
 
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Wkt.NET.Enum;
 using Wkt.NET.Linq;
 
 namespace Wkt.NET.Tests.Linq
@@ -88,7 +89,10 @@ namespace Wkt.NET.Tests.Linq
         public void ToString_Simple()
         {
             var array = new WktArray("String", 1, 2.0);
-            Assert.AreEqual(array.ToString(), "\"String\",1,2.0");
+            Assert.AreEqual(array.ToString(), "[\"String\",1,2.0]");
+
+            array = new WktArray("String", 1, 2.0) {  Type = ArrayType.Parentheses };
+            Assert.AreEqual(array.ToString(), "(\"String\",1,2.0)");
         }
 
         [TestMethod]

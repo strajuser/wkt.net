@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enum\ArrayType.cs" />
     <Compile Include="Enum\ReaderState.cs" />
     <Compile Include="Exceptions\WktException.cs" />
     <Compile Include="Interfaces\IPositionProvider.cs" />

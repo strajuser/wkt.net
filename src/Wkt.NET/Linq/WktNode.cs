@@ -71,7 +71,7 @@ namespace Wkt.NET.Linq
         /// <returns></returns>
         public override string ToString(IFormatProvider provider)
         {
-            return String.Format("{0}[{1}]", Key, base.ToString(provider));
+            return String.Format("{0}{1}", Key, base.ToString(provider));
         }
     }
 }

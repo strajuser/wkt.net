@@ -27,7 +27,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Wkt.NET.Enum;
-using Wkt.NET.Exceptions;
 using Wkt.NET.IO;
 using Wkt.NET.Linq;
 
@@ -77,7 +76,8 @@ namespace Wkt.NET.Serialization
                     if (_reader.Value != null)
                         _stack.Push(new WktValue(_reader.Value));
                     break;
-                case ReaderState.Node:
+                case ReaderState.NodeParentheses: 
+                case ReaderState.NodeSquareBrackets:
                 {
                     if (_reader.Value != null)
                         _stack.Push(new WktValue(_reader.Value));
@@ -91,7 +91,10 @@ namespace Wkt.NET.Serialization
                         if (key != null)
                         {
                             values.Reverse();
-                            var node = new WktNode(key.Key, values);
+                            var node = new WktNode(key.Key, values)
+                            {
+                                Type = _reader.State == ReaderState.NodeParentheses ? ArrayType.Parentheses : ArrayType.SquareBrackets
+                            };
                             _stack.Push(node);
                             break;
                         }
@@ -102,7 +105,10 @@ namespace Wkt.NET.Serialization
                     if (!_stack.Any())
                     {
                         values.Reverse();
-                        _stack.Push(new WktArray(values));
+                        _stack.Push(new WktArray(values)
+                        {
+                            Type = _reader.State == ReaderState.NodeParentheses ? ArrayType.Parentheses : ArrayType.SquareBrackets
+                        });
                     }
                 }
                     break;

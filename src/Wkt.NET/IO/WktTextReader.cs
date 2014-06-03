@@ -176,7 +176,7 @@ namespace Wkt.NET.IO
                         throw WktException.Create(this, "Expected value after ','");
 
                     _delimeters.Pop();
-                    _stateQueue.Enqueue(new StateValue(ReaderState.Node, _buffer.Flush()));
+                    _stateQueue.Enqueue(new StateValue(ReaderState.NodeParentheses, _buffer.Flush()));
 
                     break;
 
@@ -212,7 +212,7 @@ namespace Wkt.NET.IO
                         throw WktException.Create(this, "Expected value after ','");
 
                     _delimeters.Pop();
-                    _stateQueue.Enqueue(new StateValue(ReaderState.Node, _buffer.Flush()));
+                    _stateQueue.Enqueue(new StateValue(ReaderState.NodeSquareBrackets, _buffer.Flush()));
                     break;
                 
                 case ',':
@@ -224,7 +224,7 @@ namespace Wkt.NET.IO
 
                     if (!_buffer.IsEmpty())
                         EnqueueValue();
-                    else if (State != ReaderState.Node)
+                    else if (State != ReaderState.NodeSquareBrackets && State != ReaderState.NodeParentheses)
                         throw WktException.Create(this, "Expected value");
                     _allowContinue = true;
                     break;
