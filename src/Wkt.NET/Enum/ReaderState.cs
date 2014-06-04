@@ -39,10 +39,8 @@ namespace Wkt.NET.Enum
         Key,
         /// <summary> Read Method has been ended readding value </summary>
         Value,
-        /// <summary> Read Method has been ended readding node with square brackets </summary>
-        NodeSquareBrackets,
-        /// <summary> Read Method has been ended readding node with parentheses </summary>
-        NodeParentheses,
+        /// <summary> Read Method has been ended readding node </summary>
+        Node,
         
         /// <summary> An error occurs while reading </summary>
         Error

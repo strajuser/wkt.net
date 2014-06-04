@@ -37,7 +37,7 @@ namespace Wkt.NET.Serialization
 
         public object Deserialize(Stream data)
         {
-            using (var serializer = new WktSerializerInternal(new WktTextReader(data)))
+            using (var serializer = new WktDeserializerInternal(new WktTextReader(data)))
             {
                 return serializer.Deserialize();
             }
@@ -45,7 +45,7 @@ namespace Wkt.NET.Serialization
 
         public object Deserialize(string data)
         {
-            using (var serializer = new WktSerializerInternal(new WktTextReader(data)))
+            using (var serializer = new WktDeserializerInternal(new WktTextReader(data)))
             {
                 return serializer.Deserialize();
             }

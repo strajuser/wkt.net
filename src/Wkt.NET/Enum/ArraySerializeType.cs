@@ -28,7 +28,7 @@ namespace Wkt.NET.Enum
     /// <summary>
     /// Specifies array type - Parentheses or SquareBrackets
     /// </summary>
-    public enum ArrayType
+    public enum ArraySerializeType
     {
         SquareBrackets,
         Parentheses

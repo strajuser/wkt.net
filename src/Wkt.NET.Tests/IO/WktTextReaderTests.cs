@@ -140,7 +140,7 @@ namespace Wkt.NET.Tests.IO
 
                 rez = reader.Read();
                 Assert.IsTrue(rez);
-                Assert.IsTrue(reader.State == ReaderState.NodeSquareBrackets);
+                Assert.IsTrue(reader.State == ReaderState.Node);
                 Assert.IsNull(reader.Value);
 
                 rez = reader.Read();
@@ -169,7 +169,7 @@ namespace Wkt.NET.Tests.IO
 
                 rez = reader.Read();
                 Assert.IsTrue(rez);
-                Assert.IsTrue(reader.State == ReaderState.NodeSquareBrackets);
+                Assert.IsTrue(reader.State == ReaderState.Node);
                 Assert.IsNull(reader.Value);
 
                 rez = reader.Read();
@@ -203,7 +203,7 @@ namespace Wkt.NET.Tests.IO
 
                 rez = reader.Read();
                 Assert.IsTrue(rez);
-                Assert.IsTrue(reader.State == ReaderState.NodeSquareBrackets);
+                Assert.IsTrue(reader.State == ReaderState.Node);
                 Assert.IsNull(reader.Value);
 
                 rez = reader.Read();
@@ -237,7 +237,7 @@ namespace Wkt.NET.Tests.IO
 
                 rez = reader.Read();
                 Assert.IsTrue(rez);
-                Assert.IsTrue(reader.State == ReaderState.NodeParentheses);
+                Assert.IsTrue(reader.State == ReaderState.Node);
                 Assert.IsNull(reader.Value);
 
                 rez = reader.Read();
@@ -272,7 +272,7 @@ namespace Wkt.NET.Tests.IO
 
                 rez = reader.Read();
                 Assert.IsTrue(rez);
-                Assert.IsTrue(reader.State == ReaderState.NodeSquareBrackets);
+                Assert.IsTrue(reader.State == ReaderState.Node);
                 Assert.IsNull(reader.Value);
 
                 rez = reader.Read();
@@ -306,7 +306,7 @@ namespace Wkt.NET.Tests.IO
 
                 rez = reader.Read();
                 Assert.IsTrue(rez);
-                Assert.IsTrue(reader.State == ReaderState.NodeSquareBrackets);
+                Assert.IsTrue(reader.State == ReaderState.Node);
                 Assert.IsNull(reader.Value);
 
                 rez = reader.Read();
@@ -340,7 +340,7 @@ namespace Wkt.NET.Tests.IO
 
                 rez = reader.Read();
                 Assert.IsTrue(rez);
-                Assert.IsTrue(reader.State == ReaderState.NodeParentheses);
+                Assert.IsTrue(reader.State == ReaderState.Node);
                 Assert.IsNull(reader.Value);
 
                 rez = reader.Read();

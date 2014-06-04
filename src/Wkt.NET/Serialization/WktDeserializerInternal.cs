@@ -35,12 +35,12 @@ namespace Wkt.NET.Serialization
     /// <summary>
     /// Internal class for serialization/deserialization WKT data
     /// </summary>
-    internal class WktSerializerInternal : IDisposable
+    internal class WktDeserializerInternal : IDisposable
     {
         private readonly Stack<object> _stack = new Stack<object>();
         private readonly WktReader _reader;
 
-        public WktSerializerInternal(WktReader reader)
+        public WktDeserializerInternal(WktReader reader)
         {
             _reader = reader;
         }
@@ -76,8 +76,7 @@ namespace Wkt.NET.Serialization
                     if (_reader.Value != null)
                         _stack.Push(new WktValue(_reader.Value));
                     break;
-                case ReaderState.NodeParentheses: 
-                case ReaderState.NodeSquareBrackets:
+                case ReaderState.Node:
                 {
                     if (_reader.Value != null)
                         _stack.Push(new WktValue(_reader.Value));
@@ -91,10 +90,7 @@ namespace Wkt.NET.Serialization
                         if (key != null)
                         {
                             values.Reverse();
-                            var node = new WktNode(key.Key, values)
-                            {
-                                Type = _reader.State == ReaderState.NodeParentheses ? ArrayType.Parentheses : ArrayType.SquareBrackets
-                            };
+                            var node = new WktNode(key.Key, values);
                             _stack.Push(node);
                             break;
                         }
@@ -105,10 +101,7 @@ namespace Wkt.NET.Serialization
                     if (!_stack.Any())
                     {
                         values.Reverse();
-                        _stack.Push(new WktArray(values)
-                        {
-                            Type = _reader.State == ReaderState.NodeParentheses ? ArrayType.Parentheses : ArrayType.SquareBrackets
-                        });
+                        _stack.Push(new WktArray(values));
                     }
                 }
                     break;
@@ -169,7 +162,7 @@ namespace Wkt.NET.Serialization
             GC.SuppressFinalize(this);
         }
 
-        ~WktSerializerInternal()
+        ~WktDeserializerInternal()
         {
             Dispose(false);
         }

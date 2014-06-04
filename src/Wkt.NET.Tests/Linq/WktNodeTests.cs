@@ -177,9 +177,6 @@ namespace Wkt.NET.Tests.Linq
                 new WktNode("PROJECTION", "Mercator_Auxiliary_Sphere"),
                 new WktNode("PARAMETER", "False_Easting", 0.0));
             Assert.AreEqual(node.ToString(), "PROJCS[\"WGS_1984_Web_Mercator_Auxiliary_Sphere\",PROJECTION[\"Mercator_Auxiliary_Sphere\"],PARAMETER[\"False_Easting\",0.0]]");
-
-            node = new WktNode("KEY", 1, 2) { Type = ArrayType.Parentheses };
-            Assert.AreEqual(node.ToString(), "KEY(1,2)");
         }
 
         //[TestMethod]

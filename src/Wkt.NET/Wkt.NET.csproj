@@ -39,7 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Enum\ArrayType.cs" />
+    <Compile Include="Enum\ArraySerializeType.cs" />
     <Compile Include="Enum\ReaderState.cs" />
     <Compile Include="Exceptions\WktException.cs" />
     <Compile Include="Interfaces\IPositionProvider.cs" />
@@ -51,7 +51,7 @@
     <Compile Include="IO\WktReader.cs" />
     <Compile Include="IO\WktTextReader.cs" />
     <Compile Include="Serialization\WktSerializer.cs" />
-    <Compile Include="Serialization\WktSerializerInternal.cs" />
+    <Compile Include="Serialization\WktDeserializerInternal.cs" />
     <Compile Include="Utilities\PeekOrDefaultExtensions.cs" />
     <Compile Include="Utilities\StringBuffer.cs" />
     <Compile Include="Utilities\StringExtensions.cs" />

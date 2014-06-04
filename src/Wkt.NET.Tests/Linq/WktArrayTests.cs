@@ -106,9 +106,6 @@ namespace Wkt.NET.Tests.Linq
         {
             var array = new WktArray("String", 1, 2.0);
             Assert.AreEqual(array.ToString(), "[\"String\",1,2.0]");
-
-            array = new WktArray("String", 1, 2.0) {  Type = ArrayType.Parentheses };
-            Assert.AreEqual(array.ToString(), "(\"String\",1,2.0)");
         }
 
         [TestMethod]
