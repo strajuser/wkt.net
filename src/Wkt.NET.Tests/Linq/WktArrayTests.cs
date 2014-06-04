@@ -43,29 +43,45 @@ namespace Wkt.NET.Tests.Linq
             Assert.IsTrue(array[1].Value is int);
             Assert.IsTrue(array[2].Value is double);
 
+            // []
             array = new WktArray();
             Assert.IsTrue(array.Count == 0);
 
+            // ["str"]
             array = new WktArray("str");
             Assert.IsTrue(array.Count == 1);
 
+            // [1,2]
             array = new WktArray(1, 2);
             Assert.IsTrue(array.Count == 2);
 
+            // [[1,2]]
             array = new WktArray(new WktArray(1, 2));
-            Assert.IsTrue(array.Count == 2);
+            Assert.IsTrue(array.Count == 1);
+            Assert.IsTrue(array[0] is WktArray);
+            Assert.IsTrue(array[0].As<WktArray>().Count == 2);
 
+            // [[1,2],3]
             array = new WktArray(new []{1, 2}, 3);
-            Assert.IsTrue(array.Count == 3);
+            Assert.IsTrue(array.Count == 2);
+            Assert.IsTrue(array[0] is WktArray);
+            Assert.IsTrue(array[0].As<WktArray>().Count == 2);
 
+            // [[1,2],["s"]]
             array = new WktArray(new[] { 1, 2 }, new[] {"s"});
-            Assert.IsTrue(array.Count == 3);
+            Assert.IsTrue(array.Count == 2);
+            Assert.IsTrue(array[0] is WktArray);
+            Assert.IsTrue(array[1] is WktArray);
+            Assert.IsTrue(array[0].As<WktArray>().Count == 2);
+            Assert.IsTrue(array[1].As<WktArray>().Count == 1);
 
+            // [[1,2],[],["s"]]
             array = new WktArray(new[] { 1, 2 }, new WktArray(), new[] { "s" });
             Assert.IsTrue(array.Count == 3);
 
+            // [[1,2], [1,2], ["s"]]
             array = new WktArray(new[] { 1, 2 }, new WktArray(1, 2), new[] { "s" });
-            Assert.IsTrue(array.Count == 5);
+            Assert.IsTrue(array.Count == 3);
         }
 
         [TestMethod]
@@ -82,7 +98,7 @@ namespace Wkt.NET.Tests.Linq
             Assert.IsTrue(array.Count == 2);
 
             array = new WktArray(1, new WktNode("Key", 1, 2), new [] { 1, 2 });
-            Assert.IsTrue(array.Count == 4);
+            Assert.IsTrue(array.Count == 3);
         }
 
         [TestMethod]
@@ -110,7 +126,7 @@ namespace Wkt.NET.Tests.Linq
                 new WktNode("KEY", 2));
             Assert.IsNotNull(array["KEY"]);
             Assert.IsTrue(array["KEY"] is WktArray);
-            Assert.IsTrue(((WktArray)array["KEY"]).Count == 2);
+            Assert.IsTrue(array["KEY"].As<WktArray>().Count == 2);
 
             array = new WktArray(
                 "str",
@@ -118,8 +134,8 @@ namespace Wkt.NET.Tests.Linq
                 new WktNode("KEY", 2));
             Assert.IsNotNull(array["KEY"]);
             Assert.IsTrue(array["KEY"] is WktArray);
-            Assert.IsTrue(((WktArray)array["KEY"]).Count == 2);
-            Assert.AreSame(array[1], ((WktArray)array["KEY"])[0]);
+            Assert.IsTrue(array["KEY"].As<WktArray>().Count == 2);
+            Assert.AreSame(array[1], array["KEY"].As<WktArray>()[0]);
         }
 
         //[TestMethod]

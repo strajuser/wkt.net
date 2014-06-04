@@ -28,7 +28,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Wkt.NET.Enum;
-using Wkt.NET.Utilities;
 
 namespace Wkt.NET.Linq
 {
@@ -153,7 +152,7 @@ namespace Wkt.NET.Linq
         public ArrayType Type { get; set; }
 
         /// <summary>
-        /// Returns WKT Array as formated string (ex. ""WGS_1984", 6378137.0, 298.257223563")
+        /// Returns WKT Array as formated string (ex. "["WGS_1984", 6378137.0, 298.257223563]")
         /// </summary>
         /// <param name="provider">FormatProvider for Value</param>
         /// <returns></returns>
@@ -164,6 +163,10 @@ namespace Wkt.NET.Linq
             return String.Format(GetFormat(), String.Join(",", objects.Select(x => x.ToString(provider))));
         }
 
+        /// <summary>
+        /// Gets format of current array (in parentheses or square brackets)
+        /// </summary>
+        /// <returns></returns>
         private string GetFormat()
         {
             return Type == ArrayType.Parentheses ? "({0})" : "[{0}]";
