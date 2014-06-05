@@ -76,7 +76,7 @@ namespace Wkt.NET.Linq
             if (Value is double ||
                 Value is float ||
                 Value is decimal)
-                return String.Format(provider, "{0:0.0}", Value);
+                return String.Format(provider, "{0:0.0###################}", Value);
 
             if (Value.GetType().IsEnum)
                 return System.Enum.Format(Value.GetType(), Value, "G");

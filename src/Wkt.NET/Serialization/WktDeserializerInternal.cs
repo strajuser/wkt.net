@@ -33,7 +33,7 @@ using Wkt.NET.Linq;
 namespace Wkt.NET.Serialization
 {
     /// <summary>
-    /// Internal class for serialization/deserialization WKT data
+    /// Internal class for deserialization WKT data
     /// </summary>
     internal class WktDeserializerInternal : IDisposable
     {

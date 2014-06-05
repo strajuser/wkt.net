@@ -33,7 +33,7 @@ namespace Wkt.NET.Serialization
     /// </summary>
     public class WktSerializer
     {
-        // Wrapper for WktSerializerInternal
+        // Wrapper for WktSerializerInternal and WktDeserializerInternal
 
         public object Deserialize(Stream data)
         {
@@ -49,6 +49,18 @@ namespace Wkt.NET.Serialization
             {
                 return serializer.Deserialize();
             }
+        }
+
+        public string Serialize(object obj)
+        {
+            var serializer = new WktSerializerInternal();
+            return serializer.Serialize(obj);
+        }
+
+        public string Serialize(object obj, WktSerializationSettings settings)
+        {
+            var serializer = new WktSerializerInternal(settings);
+            return serializer.Serialize(obj);
         }
     }
 }

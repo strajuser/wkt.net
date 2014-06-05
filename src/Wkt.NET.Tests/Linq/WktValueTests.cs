@@ -65,6 +65,13 @@ namespace Wkt.NET.Tests.Linq
             val = new WktValue((float)4.0);
             Assert.AreEqual(val.ToString(), "4.0");
 
+            val = new WktValue(5.123456789);
+            Assert.AreEqual(val.ToString(), "5.123456789");
+
+            val = new WktValue(5.123456789012345678901234567890);
+            // NOTE: Support only 24 floating point numbers
+            Assert.AreEqual(val.ToString(), "5.12345678901235");
+
             val = new WktValue("str");
             Assert.AreEqual(val.ToString(), "\"str\"");
 
