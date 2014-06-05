@@ -33,6 +33,8 @@ namespace Wkt.NET.Tests.Linq
     [TestClass]
     public class WktArrayTests
     {
+        public enum DefaultEnum { VALUE, Value };
+
         [TestMethod]
         public void Linq_Simple_Ctor()
         {
@@ -106,6 +108,9 @@ namespace Wkt.NET.Tests.Linq
         {
             var array = new WktArray("String", 1, 2.0);
             Assert.AreEqual(array.ToString(), "[\"String\",1,2.0]");
+
+            array = new WktArray(DefaultEnum.VALUE, DefaultEnum.Value);
+            Assert.AreEqual(array.ToString(), "[VALUE,Value]");
         }
 
         [TestMethod]

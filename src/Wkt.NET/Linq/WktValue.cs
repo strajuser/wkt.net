@@ -78,6 +78,9 @@ namespace Wkt.NET.Linq
                 Value is decimal)
                 return String.Format(provider, "{0:0.0}", Value);
 
+            if (Value.GetType().IsEnum)
+                return System.Enum.Format(Value.GetType(), Value, "G");
+
             return String.Format(provider, "{0}", Value);
         }
 

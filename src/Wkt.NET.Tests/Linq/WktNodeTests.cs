@@ -57,6 +57,8 @@ namespace Wkt.NET.Tests.Linq
                 new WktNode("AUTHORITY", "ESRI", "102100"));
          */
 
+        public enum DefaultEnum { VALUE, Value };
+
         [TestMethod]
         public void Linq_Simple_Ctor()
         {
@@ -177,6 +179,9 @@ namespace Wkt.NET.Tests.Linq
                 new WktNode("PROJECTION", "Mercator_Auxiliary_Sphere"),
                 new WktNode("PARAMETER", "False_Easting", 0.0));
             Assert.AreEqual(node.ToString(), "PROJCS[\"WGS_1984_Web_Mercator_Auxiliary_Sphere\",PROJECTION[\"Mercator_Auxiliary_Sphere\"],PARAMETER[\"False_Easting\",0.0]]");
+
+            node = new WktNode("KEY", DefaultEnum.VALUE, DefaultEnum.Value);
+            Assert.AreEqual(node.ToString(), "KEY[VALUE,Value]");
         }
 
         //[TestMethod]
