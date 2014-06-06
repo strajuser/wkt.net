@@ -131,13 +131,37 @@ namespace Wkt.NET.Tests.Serialization
         [TestMethod]
         public void Serialize_WktArray_WithSettings()
         {
+            var settings = new WktSerializationSettings();
 
+            var arr = new WktArray(1, "str");
+            settings.ArraySerializeType = ArraySerializeType.Parentheses;
+            Assert.AreEqual((new WktSerializerInternal(settings)).Serialize(arr), "(1,\"str\")");
+
+            settings.ArraySerializeType = ArraySerializeType.SquareBrackets;
+            settings.ArraySeparator = " ";
+            Assert.AreEqual((new WktSerializerInternal(settings)).Serialize(arr), "[1 \"str\"]");
+
+            settings.ArraySerializeType = ArraySerializeType.Parentheses;
+            settings.ArraySeparator = " ";
+            Assert.AreEqual((new WktSerializerInternal(settings)).Serialize(arr), "(1 \"str\")");
         }
 
         [TestMethod]
         public void Serialize_WktNode_WithSettings()
         {
+            var settings = new WktSerializationSettings();
 
+            var node = new WktNode("Key", 1, "str");
+            settings.ArraySerializeType = ArraySerializeType.Parentheses;
+            Assert.AreEqual((new WktSerializerInternal(settings)).Serialize(node), "Key(1,\"str\")");
+
+            settings.ArraySerializeType = ArraySerializeType.SquareBrackets;
+            settings.NodeSeparator = " ";
+            Assert.AreEqual((new WktSerializerInternal(settings)).Serialize(node), "Key[1 \"str\"]");
+
+            settings.ArraySerializeType = ArraySerializeType.Parentheses;
+            settings.NodeSeparator = " ";
+            Assert.AreEqual((new WktSerializerInternal(settings)).Serialize(node), "Key(1 \"str\")");
         }
 
         [TestMethod]
