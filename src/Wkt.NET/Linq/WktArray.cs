@@ -27,6 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Wkt.NET.Enum;
 
 namespace Wkt.NET.Linq
 {
@@ -146,7 +147,7 @@ namespace Wkt.NET.Linq
         }
 
         /// <summary>
-        /// Returns WKT Array as formated string (ex. ""WGS_1984", 6378137.0, 298.257223563")
+        /// Returns WKT Array as formated string (ex. "["WGS_1984", 6378137.0, 298.257223563]")
         /// </summary>
         /// <param name="provider">FormatProvider for Value</param>
         /// <returns></returns>

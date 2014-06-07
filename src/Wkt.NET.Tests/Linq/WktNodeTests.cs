@@ -25,8 +25,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Wkt.NET.Enum;
 using Wkt.NET.Linq;
 
 namespace Wkt.NET.Tests.Linq
@@ -55,6 +57,8 @@ namespace Wkt.NET.Tests.Linq
                 new WktNode("AUTHORITY", "ESRI", "102100"));
          */
 
+        public enum DefaultEnum { VALUE, Value };
+
         [TestMethod]
         public void Linq_Simple_Ctor()
         {
@@ -81,33 +85,39 @@ namespace Wkt.NET.Tests.Linq
             node = new WktNode("KEY", 1, 2);
             Assert.IsTrue(node.Count == 2);
 
-            // KEY[1,2]
+            // KEY[[1,2]]
             node = new WktNode("KEY", new WktArray(1, 2));
-            Assert.IsTrue(node.Count == 2);
+            Assert.IsTrue(node.Count == 1);
+            Assert.IsTrue(node[0] is WktArray);
+            Assert.IsTrue(node[0].As<WktArray>().Count == 2);
 
             // KEY[KEY[1,2]]
             node = new WktNode("KEY", new WktNode("KEY", 1, 2));
             Assert.IsTrue(node.Count == 1);
 
-            // KEY[1,2,3]
+            // KEY[1,[2,3]]
             node = new WktNode("KEY", 1, new WktArray(2, 3));
-            Assert.IsTrue(node.Count == 3);
+            Assert.IsTrue(node.Count == 2);
 
             // KEY[1,KEY[2,3]]
             node = new WktNode("KEY", 1, new WktNode("KEY", 2, 3));
             Assert.IsTrue(node.Count == 2);
 
-            // KEY[1,2,"1","2"]
+            // KEY[[1,2],["1","2"]]
             node = new WktNode("KEY", new[] {1, 2}, new[] {"1", "2"});
-            Assert.IsTrue(node.Count == 4);
+            Assert.IsTrue(node.Count == 2);
+            Assert.IsTrue(node[0] is WktArray);
+            Assert.IsTrue(node[1] is WktArray);
+            Assert.IsTrue(node[0].As<WktArray>().Count == 2);
+            Assert.IsTrue(node[1].As<WktArray>().Count == 2);
 
-            // KEY[1,2,KEY[],"1","2"]
+            // KEY[[1,2],KEY[],["1","2"]]
             node = new WktNode("KEY", new[] { 1, 2 }, new WktNode("KEY"), new[] { "1", "2" });
-            Assert.IsTrue(node.Count == 5);
+            Assert.IsTrue(node.Count == 3);
 
-            // KEY[1,2,3,KEY[],"1","2"]
+            // KEY[[1,2],3,KEY[],["1","2"]]
             node = new WktNode("KEY", new[] { 1, 2 }, 3, new WktNode("KEY"), new[] { "1", "2" });
-            Assert.IsTrue(node.Count == 6);
+            Assert.IsTrue(node.Count == 4);
         }
 
         //[TestMethod]
@@ -169,6 +179,9 @@ namespace Wkt.NET.Tests.Linq
                 new WktNode("PROJECTION", "Mercator_Auxiliary_Sphere"),
                 new WktNode("PARAMETER", "False_Easting", 0.0));
             Assert.AreEqual(node.ToString(), "PROJCS[\"WGS_1984_Web_Mercator_Auxiliary_Sphere\",PROJECTION[\"Mercator_Auxiliary_Sphere\"],PARAMETER[\"False_Easting\",0.0]]");
+
+            node = new WktNode("KEY", DefaultEnum.VALUE, DefaultEnum.Value);
+            Assert.AreEqual(node.ToString(), "KEY[VALUE,Value]");
         }
 
         //[TestMethod]

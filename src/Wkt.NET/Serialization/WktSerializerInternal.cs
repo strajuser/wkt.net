@@ -24,155 +24,98 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 using Wkt.NET.Enum;
-using Wkt.NET.Exceptions;
-using Wkt.NET.IO;
 using Wkt.NET.Linq;
 
 namespace Wkt.NET.Serialization
 {
     /// <summary>
-    /// Internal class for serialization/deserialization WKT data
+    /// Internal class for serialization WKT data
     /// </summary>
-    internal class WktSerializerInternal : IDisposable
+    internal class WktSerializerInternal
     {
-        private readonly Stack<object> _stack = new Stack<object>();
-        private readonly WktReader _reader;
+        private readonly WktSerializationSettings _settings;
+        private readonly StringBuilder _sb;
 
-        public WktSerializerInternal(WktReader reader)
+        public WktSerializerInternal() : this(WktSerializationSettings.CreateDefaultSettings())
         {
-            _reader = reader;
+            
         }
 
-        /// <summary>
-        /// Deserialize data from current WktReader
-        /// </summary>
-        /// <returns></returns>
-        public object Deserialize()
+        public WktSerializerInternal(WktSerializationSettings settings)
         {
-            while (_reader.Read())
-                ProcessReaderState();
-
-            ProcessStack();
-
-            return _stack.Pop();
+            _settings = settings;
+            _sb = new StringBuilder();
         }
 
-        /// <summary>
-        /// Process current reader state
-        /// </summary>
-        private void ProcessReaderState()
+        public string Serialize(object obj)
         {
-            switch (_reader.State)
+            if (!(obj is WktValue))
+                throw new NotSupportedException("Only WktValue class is supported for serialization in this version");
+
+            ProcessWktValue((WktValue)obj);
+
+            return _sb.ToString();
+        }
+
+        private void ProcessWktValue(WktValue value)
+        {
+            var node = value as WktNode;
+            if (node != null)
             {
-                case ReaderState.Key:
+                _sb.Append(node.Key).Append(GetOpeningArrayChar());
+                for (int i = 0; i < node.Count; i++)
                 {
-                    var key = _reader.Value == null ? null : _reader.Value.ToString();
-                    _stack.Push(new KeyToken(key));
+                    ProcessWktValue(node[i]);
+                    if (i <= node.Count - 2)
+                        _sb.Append(_settings.NodeSeparator);
                 }
-                    break;
-                case ReaderState.Value: 
-                    if (_reader.Value != null)
-                        _stack.Push(new WktValue(_reader.Value));
-                    break;
-                case ReaderState.Node:
-                {
-                    if (_reader.Value != null)
-                        _stack.Push(new WktValue(_reader.Value));
+                _sb.Append(GetClosingArrayChar());
 
-                    // If node ended get data from stack until KeyToken, and replace this data with WktNode
-                    var values = new List<object>();
-                    while (_stack.Any())
-                    {
-                        var temp = _stack.Pop();
-                        var key = temp as KeyToken;
-                        if (key != null)
-                        {
-                            values.Reverse();
-                            var node = new WktNode(key.Key, values);
-                            _stack.Push(node);
-                            break;
-                        }
-
-                        values.Add(temp);   
-                    }
-
-                    if (!_stack.Any())
-                    {
-                        values.Reverse();
-                        _stack.Push(new WktArray(values));
-                    }
-                }
-                    break;
-            }
-        }
-        
-        /// <summary>
-        /// Process stack until it empty or first key
-        /// </summary>
-        /// <returns></returns>
-        private void ProcessStack()
-        {
-            if (_stack.Count == 1)
                 return;
+            }
 
-            // If node ended get data from stack until KeyToken, and replace this data with WktNode
-            var values = new List<object>();
-            while (_stack.Any())
+            var array = value as WktArray;
+            if (array != null)
             {
-                var temp = _stack.Pop();
-                var key = temp as KeyToken;
-                if (key != null)
+                _sb.Append(GetOpeningArrayChar());
+                for (int i = 0; i < array.Count; i++)
                 {
-                    values.Reverse();
-                    var node = new WktNode(key.Key, values);
-                    _stack.Push(node);
-                    break;
+                    ProcessWktValue(array[i]);
+                    if (i <= array.Count - 2)
+                        _sb.Append(_settings.ArraySeparator);
                 }
+                _sb.Append(GetClosingArrayChar());
 
-                values.Add(temp);
+                return;
             }
 
-            if (!_stack.Any())
+            _sb.Append(value.ToString(_settings.FormatProvider));
+        }
+
+        private char GetOpeningArrayChar()
+        {
+            switch (_settings.ArraySerializeType)
             {
-                values.Reverse();
-                _stack.Push(new WktArray(values));
+                case ArraySerializeType.SquareBrackets:
+                default:
+                    return '[';
+                case ArraySerializeType.Parentheses:
+                    return '(';
             }
         }
 
-        /// <summary>
-        /// Nested class for pushing key data to stack
-        /// </summary>
-        private class KeyToken
+        private char GetClosingArrayChar()
         {
-            public string Key { get; private set; }
-
-            public KeyToken(string key)
+            switch (_settings.ArraySerializeType)
             {
-                Key = key;
+                case ArraySerializeType.SquareBrackets:
+                default:
+                    return ']';
+                case ArraySerializeType.Parentheses:
+                    return ')';
             }
         }
-
-        #region | IDisposable Members |
-        
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        ~WktSerializerInternal()
-        {
-            Dispose(false);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-                _reader.Dispose();
-        }
-        #endregion
     }
 }

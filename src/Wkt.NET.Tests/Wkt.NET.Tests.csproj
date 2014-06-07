@@ -53,8 +53,9 @@
     <Compile Include="Linq\WktNodeTests.cs" />
     <Compile Include="Linq\WktValueTests.cs" />
     <Compile Include="PerformanceTests.cs" />
-    <Compile Include="Serialization\WktSerializerInternalTests.cs" />
+    <Compile Include="Serialization\WktDeserializerInternalTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serialization\WktSerializerInternalTests.cs" />
     <Compile Include="TestUtilities\ExceptionAssert.cs" />
     <Compile Include="TestUtilities\WktReaderExtensions.cs" />
     <Compile Include="WktConvertTests.cs" />

@@ -76,9 +76,22 @@ namespace Wkt.NET.Linq
             if (Value is double ||
                 Value is float ||
                 Value is decimal)
-                return String.Format(provider, "{0:0.0}", Value);
+                return String.Format(provider, "{0:0.0###################}", Value);
+
+            if (Value.GetType().IsEnum)
+                return System.Enum.Format(Value.GetType(), Value, "G");
 
             return String.Format(provider, "{0}", Value);
+        }
+
+        /// <summary>
+        /// Returns current value casted to specified type <typeparamref name="T"/>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T As<T>() where T : WktValue
+        {
+            return this as T;
         }
     }
 }

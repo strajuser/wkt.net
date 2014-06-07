@@ -24,86 +24,227 @@
 #endregion
 
 using System;
-using System.Linq;
+using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Wkt.NET.Exceptions;
-using Wkt.NET.IO;
+using Wkt.NET.Enum;
 using Wkt.NET.Linq;
 using Wkt.NET.Serialization;
-using Wkt.NET.Tests.TestUtilities;
 
 namespace Wkt.NET.Tests.Serialization
 {
     [TestClass]
     public class WktSerializerInternalTests
     {
+        public enum Direction { NORTH, SOUTH, EAST, WEST, UP };
+
         [TestMethod]
-        public void Deserialize_WktValue()
+        public void Serialize_WktValue_DefaultSettings()
         {
-            const string data = "str";
-            using (var serializer = new WktSerializerInternal(new WktTextReader(data)))
-            {
-                var rez = serializer.Deserialize();
-                Assert.IsTrue(rez is WktValue);
-            }
+            var val = new WktValue(0);
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(val), "0");
+
+            val = new WktValue(1);
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(val), "1");
+
+            val = new WktValue(-1);
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(val), "-1");
+
+            val = new WktValue(int.MaxValue);
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(val), int.MaxValue.ToString(CultureInfo.InvariantCulture));
+
+            val = new WktValue("str");
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(val), "\"str\"");
+
+            val = new WktValue(1.0);
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(val), "1.0");
+
+            val = new WktValue(-1.0);
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(val), "-1.0");
+
+            val = new WktValue(1.123456789);
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(val), "1.123456789");
+
+            val = new WktValue(Direction.NORTH);
+            // Enum should be serialized without ""
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(val), "NORTH");
         }
 
         [TestMethod]
-        public void Deserialize_WktNode()
+        public void Serialize_WktArray_DefaultSettings()
         {
-            const string data = "PROJCS[\"Name\"]";
-            using (var serializer = new WktSerializerInternal(new WktTextReader(data)))
-            {
-                var node = serializer.Deserialize();
-                Assert.IsTrue(node is WktNode);
-            }
+            var arr = new WktArray();
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(arr), "[]");
+
+            arr = new WktArray(1);
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(arr), "[1]");
+
+            arr = new WktArray(1, 2);
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(arr), "[1,2]");
+
+            arr = new WktArray("str");
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(arr), "[\"str\"]");
+
+            arr = new WktArray(1, "str");
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(arr), "[1,\"str\"]");
+
+            arr = new WktArray(1.0);
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(arr), "[1.0]");
+
+            arr = new WktArray(Direction.WEST);
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(arr), "[WEST]");
         }
 
         [TestMethod]
-        public void Deserialize_WktNodeArray()
+        public void Serialize_WktNode_DefaultSettings()
         {
-            const string data = "PROJCS[\"Name\", \"Name2\"]";
-            using (var serializer = new WktSerializerInternal(new WktTextReader(data)))
-            {
-                var node = serializer.Deserialize() as WktNode;
-                Assert.IsTrue(node != null);
-                Assert.IsTrue(node.Count == 2);
-                Assert.IsTrue(node[0].Value is String);
-            }
+            var node = new WktNode("Key");
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(node), "Key[]");
+
+            node = new WktNode("Key", 1);
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(node), "Key[1]");
+
+            node = new WktNode("Key", 1, 2);
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(node), "Key[1,2]");
+
+            node = new WktNode("Key", "str");
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(node), "Key[\"str\"]");
+
+            node = new WktNode("Key", 1, "str");
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(node), "Key[1,\"str\"]");
+
+            node = new WktNode("Key", 1.0);
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(node), "Key[1.0]");
+
+            node = new WktNode("Key", 1.0, "str");
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(node), "Key[1.0,\"str\"]");
+
+            node = new WktNode("Key", Direction.SOUTH);
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(node), "Key[SOUTH]");
         }
 
         [TestMethod]
-        public void Deserialize_ComplexWkt()
+        public void Serialize_WktValue_WithSettings()
         {
-            const string data = "PROJCS[\"WGS_1984_Web_Mercator_Auxiliary_Sphere\",GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.017453292519943295]],PROJECTION[\"Mercator_Auxiliary_Sphere\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",0.0],PARAMETER[\"Standard_Parallel_1\",0.0],PARAMETER[\"Auxiliary_Sphere_Type\",0.0],UNIT[\"Meter\",1.0]]";
-            using (var serializer = new WktSerializerInternal(new WktTextReader(data)))
-            {
-                var node = serializer.Deserialize() as WktNode;
-                
-                Assert.IsNotNull(node);
-                Assert.AreEqual(node[0].Value, "WGS_1984_Web_Mercator_Auxiliary_Sphere");
-                Assert.IsTrue(node.OfType<WktNode>().Count() == 8);
-                Assert.IsTrue(node.OfType<WktNode>().Count(x => x.Key == "PARAMETER") == 5);
 
-                var node2 = node[1] as WktNode;
-                Assert.IsNotNull(node2);
-                Assert.AreEqual(node2.Key, "GEOGCS");
-                Assert.AreEqual(node2[0].Value, "GCS_WGS_1984");
-                Assert.IsTrue(node2.Count == 4);
-                Assert.IsTrue(node2.Last() is WktNode);
-                Assert.AreEqual(((WktNode)node2.Last()).Key, "UNIT");
-            }
         }
 
         [TestMethod]
-        public void BrokenDelimiters()
+        public void Serialize_WktArray_WithSettings()
         {
-            const string data = "1, 2]";
+            var settings = new WktSerializationSettings();
 
-            using (var serializer = new WktSerializerInternal(new WktTextReader(data)))
+            var arr = new WktArray(1, "str");
+            settings.ArraySerializeType = ArraySerializeType.Parentheses;
+            Assert.AreEqual((new WktSerializerInternal(settings)).Serialize(arr), "(1,\"str\")");
+
+            settings.ArraySerializeType = ArraySerializeType.SquareBrackets;
+            settings.ArraySeparator = " ";
+            Assert.AreEqual((new WktSerializerInternal(settings)).Serialize(arr), "[1 \"str\"]");
+
+            settings.ArraySerializeType = ArraySerializeType.Parentheses;
+            settings.ArraySeparator = " ";
+            Assert.AreEqual((new WktSerializerInternal(settings)).Serialize(arr), "(1 \"str\")");
+        }
+
+        [TestMethod]
+        public void Serialize_WktNode_WithSettings()
+        {
+            var settings = new WktSerializationSettings();
+
+            var node = new WktNode("Key", 1, "str");
+            settings.ArraySerializeType = ArraySerializeType.Parentheses;
+            Assert.AreEqual((new WktSerializerInternal(settings)).Serialize(node), "Key(1,\"str\")");
+
+            settings.ArraySerializeType = ArraySerializeType.SquareBrackets;
+            settings.NodeSeparator = " ";
+            Assert.AreEqual((new WktSerializerInternal(settings)).Serialize(node), "Key[1 \"str\"]");
+
+            settings.ArraySerializeType = ArraySerializeType.Parentheses;
+            settings.NodeSeparator = " ";
+            Assert.AreEqual((new WktSerializerInternal(settings)).Serialize(node), "Key(1 \"str\")");
+        }
+
+        [TestMethod]
+        public void Serialize_RealDataExample()
+        {
+            var val = new WktNode("COMPD_CS", @"OSGB36 / British National Grid + ODN\",
+                new WktNode("PROJCS", @"OSGB 1936 / British National Grid",
+                    new WktNode("GEOGCS", "OSGB 1936",
+                        new WktNode("DATUM", "OSGB_1936",
+                            new WktNode("SPHEROID", "Airy 1830", 6377563.396, 299.3249646, new WktNode("AUTHORITY", "EPSG", "7001")),
+                            new WktNode("TOWGS84", 375, -111, 431, 0, 0, 0, 0),
+                            new WktNode("AUTHORITY", "EPSG", "6277")),
+                        new WktNode("PRIMEM", "Greenwich", 0, new WktNode("AUTHORITY", "EPSG", "8901")),
+                        new WktNode("UNIT", "DMSH", 0.0174532925199433, new WktNode("AUTHORITY", "EPSG", "9108")),
+                        new WktNode("AXIS", "Lat", Direction.NORTH),
+                        new WktNode("AXIS", "Long", Direction.EAST),
+                        new WktNode("AUTHORITY", "EPSG", "4277")),
+                    new WktNode("PROJECTION", "Transverse_Mercator"),
+                    new WktNode("PARAMETER", "latitude_of_origin", 49),
+                    new WktNode("PARAMETER", "central_meridian", -2),
+                    new WktNode("PARAMETER", "scale_factor", 0.999601272),
+                    new WktNode("PARAMETER", "false_easting", 400000),
+                    new WktNode("PARAMETER", "false_northing", -100000),
+                    new WktNode("UNIT", "metre", 1, new WktNode("AUTHORITY", "EPSG", "9001")),
+                    new WktNode("AXIS", "E", Direction.EAST),
+                    new WktNode("AXIS", "N", Direction.NORTH),
+                    new WktNode("AUTHORITY", "EPSG", "27700")),
+                new WktNode("VERT_CS", "Newlyn",
+                    new WktNode("VERT_DATUM", "Ordnance Datum Newlyn", 2005, new WktNode("AUTHORITY", "EPSG", "5101")),
+                    new WktNode("UNIT", "metre", 1, new WktNode("AUTHORITY", "EPSG", "9001")),
+                    new WktNode("AXIS", "Up", Direction.UP),
+                    new WktNode("AUTHORITY", "EPSG", "5701")),
+                new WktNode("AUTHORITY", "EPSG", "7405"));
+
+            var rez = @"COMPD_CS[""OSGB36 / British National Grid + ODN\"",
+    PROJCS[""OSGB 1936 / British National Grid"",
+        GEOGCS[""OSGB 1936"",
+            DATUM[""OSGB_1936"",
+                SPHEROID[""Airy 1830"",6377563.396,299.3249646,AUTHORITY[""EPSG"",""7001""]],
+                TOWGS84[375,-111,431,0,0,0,0],
+                AUTHORITY[""EPSG"",""6277""]],
+            PRIMEM[""Greenwich"",0,AUTHORITY[""EPSG"",""8901""]],
+            UNIT[""DMSH"",0.0174532925199433,AUTHORITY[""EPSG"",""9108""]],
+            AXIS[""Lat"",NORTH],
+            AXIS[""Long"",EAST],
+            AUTHORITY[""EPSG"",""4277""]],
+        PROJECTION[""Transverse_Mercator""],
+        PARAMETER[""latitude_of_origin"",49],
+        PARAMETER[""central_meridian"",-2],
+        PARAMETER[""scale_factor"",0.999601272],
+        PARAMETER[""false_easting"",400000],
+        PARAMETER[""false_northing"",-100000],
+        UNIT[""metre"",1,AUTHORITY[""EPSG"",""9001""]],
+        AXIS[""E"",EAST],
+        AXIS[""N"",NORTH],
+        AUTHORITY[""EPSG"",""27700""]],
+    VERT_CS[""Newlyn"",
+        VERT_DATUM[""Ordnance Datum Newlyn"",2005,AUTHORITY[""EPSG"",""5101""]],
+        UNIT[""metre"",1,AUTHORITY[""EPSG"",""9001""]],
+        AXIS[""Up"",UP],
+        AUTHORITY[""EPSG"",""5701""]],
+    AUTHORITY[""EPSG"",""7405""]]";
+
+            Assert.AreEqual((new WktSerializerInternal()).Serialize(val), RemoveLineBreakData(rez));
+
+            val = new WktNode("MULTIPOINT",
+                new [] {10, 40},
+                new [] {40, 30},
+                new [] {20, 20},
+                new [] {30, 10});
+
+            var settings = new WktSerializationSettings
             {
-                ExceptionAssert.Throws<WktException>("Error parsing input data, position: 5. Bad closing ']', expected ''", () => serializer.Deserialize());
-            }
+                ArraySeparator = " ",
+                ArraySerializeType = ArraySerializeType.Parentheses,
+            };
+            var serializer = new WktSerializerInternal(settings);
+            Assert.AreEqual(serializer.Serialize(val), "MULTIPOINT((10 40),(40 30),(20 20),(30 10))");
+        }
+
+        private string RemoveLineBreakData(string value)
+        {
+            return value.Replace(Environment.NewLine, "").Replace("    ", "");
         }
     }
 }

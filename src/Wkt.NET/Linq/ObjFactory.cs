@@ -41,7 +41,7 @@ namespace Wkt.NET.Linq
         /// <returns></returns>
         public static List<WktValue> CreateObjects(params object[] values)
         {
-            return values.SelectMany(GetInnerObjects).ToList();
+            return GetRootObjects(values).ToList();
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Wkt.NET.Linq
         /// <returns></returns>
         public static List<WktValue> CreateObjects(IEnumerable values)
         {
-            return GetInnerObjects(values).ToList();
+            return GetRootObjects(values).ToList();
         }
 
         /// <summary>
@@ -61,24 +61,29 @@ namespace Wkt.NET.Linq
         /// <returns></returns>
         private static WktValue CreateWktValue(object value)
         {
-            return value is WktValue ? (WktValue)value : new WktValue(value);
+            if (!(value is IEnumerable) ||
+                value is string ||
+                value is WktArray)
+                return value is WktValue ? (WktValue)value : new WktValue(value);
+
+            var items = (IEnumerable)value;
+            return new WktArray(items.Cast<object>().Select(CreateWktValue));
         }
 
         /// <summary>
-        /// Gets inner objects converted to WktValue. 
+        /// Enumerates root objects converted to WktValue. 
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        private static IEnumerable<WktValue> GetInnerObjects(object obj)
+        private static IEnumerable<WktValue> GetRootObjects(object obj)
         {
-            // Exclude simple enumerable data types from union - string and WktNode
             if (!(obj is IEnumerable) ||
                 obj is string ||
-                obj is WktNode)
-                return new[] {CreateWktValue(obj)};
+                obj is WktArray)
+                return new[] { CreateWktValue(obj) };
 
             var items = obj as IEnumerable;
-            return items.Cast<object>().SelectMany(GetInnerObjects).Select(CreateWktValue);
+            return items.Cast<object>().Select(CreateWktValue);
         }
     }
 }
