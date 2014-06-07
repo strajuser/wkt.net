@@ -49,6 +49,7 @@
     <Compile Include="IO\WktReaderTests.cs" />
     <Compile Include="IO\WktTextReaderTests.cs" />
     <Compile Include="Linq\WktArrayTests.cs" />
+    <Compile Include="Linq\WktNamedNodeTests.cs" />
     <Compile Include="Linq\WktNodeTests.cs" />
     <Compile Include="Linq\WktValueTests.cs" />
     <Compile Include="PerformanceTests.cs" />

@@ -152,8 +152,12 @@ namespace Wkt.NET.Linq
         /// <returns></returns>
         public override string ToString(IFormatProvider provider)
         {
-            var objects = (IEnumerable<WktValue>)Value;
+            return ArrayToString(provider);
+        }
 
+        protected string ArrayToString(IFormatProvider provider)
+        {
+            var objects = (IEnumerable<WktValue>)Value;
             return String.Join(",", objects.Select(x => x.ToString(provider)));
         }
     }

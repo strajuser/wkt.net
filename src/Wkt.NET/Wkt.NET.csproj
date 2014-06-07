@@ -43,6 +43,7 @@
     <Compile Include="Exceptions\WktException.cs" />
     <Compile Include="Interfaces\IPositionProvider.cs" />
     <Compile Include="Linq\WktArray.cs" />
+    <Compile Include="Linq\WktNamedNode.cs" />
     <Compile Include="Linq\WktNode.cs" />
     <Compile Include="Linq\ObjFactory.cs" />
     <Compile Include="Linq\WktValue.cs" />

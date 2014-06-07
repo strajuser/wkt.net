@@ -25,53 +25,43 @@
 
 using System;
 using System.Collections;
+using System.Linq;
 
 namespace Wkt.NET.Linq
 {
     /// <summary>
-    /// WKT Node with signature key[value {, value}]
+    /// WKT Node with name (KEY["Name", {values}])
     /// </summary>
-    public class WktNode : WktArray
+    public class WktNamedNode : WktNode
     {
-        /// <summary>
-        /// Creates simple WKT Node with array of values (ex. "SPHEROID["WGS_1984", 6378137.0, 298.257223563]") 
-        /// </summary>
-        /// <param name="key">Key of WKT Node</param>
-        /// <param name="values">Array of values of WKT Node</param>
-        /// <example>
-        /// <code lang="cs">
-        /// new WktNode("SPHEROID", "WGS_1984", 6378137.0, 298.257223563)
-        /// </code>
-        /// </example>
-        public WktNode(string key, params object[] values) : base(values)
+        private readonly string _name;
+
+        public WktNamedNode(string key, string name, params object[] values) : base(key, values)
         {
-            Key = key;
+            _name = name;
+        }
+
+        public WktNamedNode(string key, string name, IEnumerable values)
+            : base(key, values)
+        {
+            _name = name;
         }
 
         /// <summary>
-        /// Creates simple WKT Node with array of values (ex. "SPHEROID["WGS_1984", 6378137.0, 298.257223563]") 
+        /// Gets name of WKT Node
         /// </summary>
-        /// <param name="key">Key of WKT Node</param>
-        /// <param name="values">IEnumerable of values of WKT Node</param>
-        public WktNode(string key, IEnumerable values)
-            : base(values)
+        public string Name
         {
-            Key = key;
+            get { return _name; }
         }
 
-        /// <summary>
-        /// Gets WKT Node Key
-        /// </summary>
-        public string Key { get; private set; }
-
-        /// <summary>
-        /// Returns WKT Object as formated string (ex. "SPHEROID["WGS_1984", 6378137.0, 298.257223563]")
-        /// </summary>
-        /// <param name="provider">FormatProvider for Value</param>
-        /// <returns></returns>
         public override string ToString(IFormatProvider provider)
         {
-            return String.Format("{0}[{1}]", Key, ArrayToString(provider));
+            return String.Format("{0}[\"{1}\"{2}{3}]", 
+                Key, 
+                Name,
+                this.Any() ? "," : null, 
+                ArrayToString(provider));
         }
     }
 }
